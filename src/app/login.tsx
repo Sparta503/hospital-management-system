@@ -7,7 +7,7 @@ import { FaUser, FaEnvelope, FaLock, FaUserMd, FaUserCog } from 'react-icons/fa'
 import { useAuth } from './contexts/AuthContext';
 
 export default function LoginForm(): JSX.Element {
-  const router = useRouter();
+
   const { login, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -43,7 +43,7 @@ export default function LoginForm(): JSX.Element {
 
       // Use AuthContext login
       login(userData);
-    } catch (error) {
+    } catch {
       setError('Invalid login credentials');
       setIsLoading(false);
     }
