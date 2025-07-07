@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, ChangeEvent, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import { FaUser, FaBuilding, FaEnvelope, FaLock, FaCheck } from 'react-icons/fa';
 import { Field } from './components/form/InputFields';
 
@@ -18,7 +17,7 @@ type FormData = {
   organization: string;
 };
 
-export default function SignupForm({ userType, onBackToLogin }: SignupFormProps): JSX.Element {
+export default function SignupForm({ userType, onBackToLogin }: SignupFormProps) {
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
