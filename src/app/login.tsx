@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useRef, FormEvent, MouseEvent, JSX } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, FormEvent, MouseEvent } from 'react';
 import Signup from './Signup';
 import { FaUser, FaEnvelope, FaLock, FaUserMd, FaUserCog } from 'react-icons/fa';
 import { useAuth } from './contexts/AuthContext';
