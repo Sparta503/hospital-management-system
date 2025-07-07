@@ -19,7 +19,7 @@ type FormData = {
 };
 
 export default function SignupForm({ userType, onBackToLogin }: SignupFormProps): JSX.Element {
-  const router = useRouter();
+
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
@@ -56,7 +56,7 @@ export default function SignupForm({ userType, onBackToLogin }: SignupFormProps)
       setSuccess(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       onBackToLogin();
-    } catch (err) {
+    } catch {
       setError('Failed to create account');
       setIsLoading(false);
     }
