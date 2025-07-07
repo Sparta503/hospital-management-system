@@ -5,7 +5,7 @@ import Signup from './Signup';
 import { FaUser, FaEnvelope, FaLock, FaUserMd, FaUserCog } from 'react-icons/fa';
 import { useAuth } from './contexts/AuthContext';
 
-export default function LoginForm(): JSX.Element {
+export default function LoginForm() {
 
   const { login, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState<string>('');
