@@ -35,7 +35,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
-    router.push('/dashboard');
+    
+    // Redirect based on user role
+    switch(userData.role) {
+      case 'admin':
+        router.push('/admin/dashboard');
+        break;
+      case 'doctor':
+        router.push('/doctor/dashboard');
+        break;
+      case 'patient':
+      default:
+        router.push('/patient/dashboard');
+    }
   };
 
   const logout = () => {
