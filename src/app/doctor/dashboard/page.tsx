@@ -69,7 +69,7 @@ export default function DoctorDashboard() {
               Welcome, Dr. {user.name}!
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              You are logged in as a doctor. Here's a quick overview of your dashboard.
+              You are logged in as a doctor. Here&apos;s a quick overview of your dashboard.
             </Typography>
           </Paper>
 
