@@ -1,12 +1,21 @@
 'use client';
 
+import { Box, Container, Typography, Paper, useTheme } from '@mui/material';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import DoctorSidebar from '@/components/doctor/Sidebar';
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
   const router = useRouter();
+  const theme = useTheme();
+  const [isClient, setIsClient] = useState(false);
+
+  // Set client-side rendering
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Redirect to login if not authenticated or not a doctor
   useEffect(() => {
@@ -17,20 +26,84 @@ export default function DoctorDashboard() {
     }
   }, [user, router]);
 
-  if (!user || user.role !== 'doctor') {
-    return <div>Loading...</div>;
+  if (!isClient || !user || user.role !== 'doctor') {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Doctor Dashboard</h1>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Welcome, Dr. {user.name}!</h2>
-          <p className="text-gray-600">You are logged in as a doctor.</p>
-          {/* Add doctor-specific content here */}
-        </div>
-      </div>
-    </div>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+      <DoctorSidebar />
+      
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1, 
+          p: 3,
+          width: { md: `calc(100% - 240px)` },
+          ml: { md: '240px' },
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
+      >
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Doctor Dashboard
+          </Typography>
+          
+          <Paper 
+            elevation={3} 
+            sx={{ 
+              p: 4, 
+              mb: 4,
+              borderRadius: 2,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Typography variant="h5" component="h2" gutterBottom>
+              Welcome, Dr. {user.name}!
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              You are logged in as a doctor. Here's a quick overview of your dashboard.
+            </Typography>
+          </Paper>
+
+          {/* Add more dashboard components here */}
+          <Box sx={{ display: 'grid', gap: 4, gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' } }}>
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" color="primary" gutterBottom>
+                Appointments Today
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                12
+              </Typography>
+            </Paper>
+            
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" color="primary" gutterBottom>
+                Total Patients
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                84
+              </Typography>
+            </Paper>
+            
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" color="primary" gutterBottom>
+                Pending Tasks
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                5
+              </Typography>
+            </Paper>
+          </Box>
+        </Container>
+      </Box>
+    </Box>
   );
 }
