@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
@@ -13,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import EventIcon from '@mui/icons-material/Event';
-import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import DescriptionIcon from '@mui/icons-material/Description';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -104,7 +102,8 @@ export default function DoctorSidebar() {
   const { logout } = useAuth();
   const setActiveView = useViewStore((state) => state.setActiveView);
   const [mounted, setMounted] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+  // State for expanded menus can be added back when needed
+  // const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
 
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const mobileOpen = useSidebarStore((state) => state.mobileOpen);
@@ -142,12 +141,13 @@ export default function DoctorSidebar() {
     }
   };
 
-  const handleToggleSubMenu = (label: string) => {
-    setExpandedMenus((prev) => ({
-      ...prev,
-      [label]: !prev[label],
-    }));
-  };
+  // Commented out unused function to be used in future updates
+  // const handleToggleSubMenu = (label: string) => {
+  //   setExpandedMenus((prev) => ({
+  //     ...prev,
+  //     [label]: !prev[label],
+  //   }));
+  // };
 
   const drawerContent = (
     <Box 
@@ -189,7 +189,8 @@ export default function DoctorSidebar() {
             {section.items && (
               <List>
                 {section.items.map((item) => {
-                  const isExpanded = expandedMenus[item.label] || false;
+                  // Expanded menu functionality can be added back when needed
+                  const isExpanded = false;
                   const hasSubItems = item.subItems && item.subItems.length > 0;
 
                   return (
