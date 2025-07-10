@@ -15,10 +15,9 @@ import EventIcon from '@mui/icons-material/Event';
 import DescriptionIcon from '@mui/icons-material/Description';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import IconButton from '@mui/material/IconButton';
-import Collapse from '@mui/material/Collapse';
+
 import { Drawer, useMediaQuery, useTheme } from '@mui/material';
 import { useSidebarStore } from '@/app/store/sidebarStore';
 import { useViewStore } from '@/app/store/viewStore';
