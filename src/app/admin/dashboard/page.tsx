@@ -2,14 +2,19 @@
 
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Box, Container, Typography, useTheme, Paper } from '@mui/material';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const router = useRouter();
+  const theme = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Redirect to login if not authenticated or not an admin
+  // Set client-side rendering and handle redirects
   useEffect(() => {
+    setIsMounted(true);
+    
     if (!user) {
       router.push('/login');
     } else if (user.role !== 'admin') {
@@ -17,20 +22,44 @@ export default function AdminDashboard() {
     }
   }, [user, router]);
 
-  if (!user || user.role !== 'admin') {
-    return <div>Loading...</div>;
+  if (!isMounted || !user || user.role !== 'admin') {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Welcome, {user.name}!</h2>
-          <p className="text-gray-600">You are logged in as an administrator.</p>
-          {/* Add admin-specific content here */}
-        </div>
-      </div>
-    </div>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1,
+          p: 3,
+          width: { md: `calc(100% - 240px)` },
+          ml: { md: '240px' },
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
+      >
+        <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Admin Dashboard
+          </Typography>
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Welcome, {user.name}!
+            </Typography>
+            <Typography color="text.secondary">
+              You are logged in as an administrator.
+            </Typography>
+            {/* Add admin-specific content here */}
+          </Paper>
+        </Container>
+      </Box>
+    </Box>
   );
 }
