@@ -43,10 +43,11 @@ export default function DoctorLayout({
       <Box 
         component="main" 
         sx={{ 
-          flexGrow: 1, 
-          p: 3,
+          flexGrow: 1,
           width: { md: `calc(100% - 240px)` },
           ml: { md: '240px' },
+          p: 0,
+          m: 0,
         }}
       >
         {children}
