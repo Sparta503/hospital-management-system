@@ -38,15 +38,18 @@ export default function PatientLayout({
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default', width: '100%' }}>
       <PatientSidebar />
       <Box 
         component="main" 
         sx={{ 
-          flexGrow: 1, 
-          p: 3,
-          width: { md: `calc(100% - 240px)` },
-          ml: { md: '240px' },
+          flexGrow: 1,
+          width: '100%',
+          p: 0,
+          m: 0,
+          position: 'relative',
+          left: 0,
+          right: 0,
         }}
       >
         {children}
