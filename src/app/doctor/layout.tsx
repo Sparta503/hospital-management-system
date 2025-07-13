@@ -44,8 +44,7 @@ export default function DoctorLayout({
         component="main" 
         sx={{ 
           flexGrow: 1,
-          width: { md: `calc(100% - 240px)` },
-          ml: { md: '240px' },
+          width: '100%',
           p: 0,
           m: 0,
         }}
