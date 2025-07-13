@@ -586,6 +586,31 @@ export default function PatientDashboard() {
                 )}
               </div>
             </div>
+
+            {/* View Records Section */}
+            <div className="bg-white shadow rounded-lg overflow-hidden mt-6">
+              <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+                <h3 className="text-lg leading-6 font-medium text-gray-900">View Records</h3>
+                <button 
+                  onClick={() => router.push('/medical-records')}
+                  className="text-sm text-blue-600 hover:text-blue-500"
+                >
+                  View All
+                </button>
+              </div>
+              <div className="px-6 py-4">
+                <p className="text-sm text-gray-600 mb-3">
+                  Access your medical records from previous months and years.
+                </p>
+                <button
+                  onClick={() => router.push('/medical-records')}
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  <FileText className="-ml-1 mr-2 h-5 w-5" />
+                  View Past Records
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Quick Actions & Recent Records */}
