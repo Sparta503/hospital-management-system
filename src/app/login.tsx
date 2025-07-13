@@ -9,7 +9,7 @@ export default function LoginForm() {
 
   const { login, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const[password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showSignup, setShowSignup] = useState<boolean>(false);
