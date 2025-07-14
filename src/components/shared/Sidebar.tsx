@@ -17,12 +17,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import IconButton from '@mui/material/IconButton';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
+import SecurityIcon from '@mui/icons-material/Security';
 
 import { Drawer, useMediaQuery, useTheme } from '@mui/material';
 import { useSidebarStore } from '@/app/store/sidebarStore';
 import { useViewStore } from '@/app/store/viewStore';
-import SettingsIcon from '@mui/icons-material/Settings';
-import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '@/app/contexts/AuthContext';
 
 // Constants
@@ -173,14 +175,28 @@ export default function Sidebar({ role }: SidebarProps) {
     }
   };
 
+  const getPortalIcon = (role: UserRole) => {
+    switch (role) {
+      case 'patient':
+        return <PersonIcon sx={{ mr: 1, color: 'error.main' }} />; // single person for patient
+      case 'doctor':
+        return <PeopleIcon sx={{ mr: 1, color: 'primary.main' }} />; // group for doctor
+      case 'admin':
+        return <SecurityIcon sx={{ mr: 1, color: 'warning.main' }} />;
+      default:
+        return null;
+    }
+  };
+
   const drawerContent = (
     <Box 
       sx={{ 
         display: 'flex', 
         flexDirection: 'column', 
         height: '100%',
-        bgcolor: 'background.paper',
-        color: 'text.primary',
+        bgcolor: 'black', // <-- Set sidebar background to black
+        color: 'white',   // <-- Set default text color to white
+        pt: 10, // Keep this for top padding
       }}
     >
       <Box 
@@ -193,15 +209,22 @@ export default function Sidebar({ role }: SidebarProps) {
         }}
       >
         {!collapsed && (
-          <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
+            {getPortalIcon(role)}
             {role.charAt(0).toUpperCase() + role.slice(1)} Portal
           </Typography>
         )}
-        <IconButton onClick={toggleCollapsed} size="small">
+        <IconButton
+          onClick={toggleCollapsed}
+          size="small"
+          sx={{
+            color: 'white', // <-- Make the toggle icon white
+          }}
+        >
           {collapsed ? <MenuIcon /> : <ChevronLeftIcon />}
         </IconButton>
       </Box>
-      <Divider />
+      <Divider sx={{ my: 2}} /> {/* Increase vertical margin here */}
       <Box sx={{ flex: 1, overflowY: 'auto' }}>
         {filteredMenu.map((section, index) => (
           <React.Fragment key={index}>
@@ -231,9 +254,13 @@ export default function Sidebar({ role }: SidebarProps) {
                           borderRadius: 2,
                           mx: 1,
                           backgroundColor: isActive ? 'primary.main' : 'transparent',
-                          color: isActive ? 'primary.contrastText' : 'inherit',
+                          color: isActive ? 'primary.contrastText' : 'white',
+                          transition: 'background 0.2s, color 0.2s',
                           '&:hover': {
-                            backgroundColor: isActive ? 'primary.dark' : 'action.hover',
+                            backgroundColor: isActive
+                              ? 'primary.dark'
+                              : 'rgba(255,255,255,0.16)', // a bit stronger white hover
+                            color: isActive ? 'primary.contrastText' : 'primary.main', // text turns primary on hover
                           },
                         }}
                       >
@@ -242,7 +269,7 @@ export default function Sidebar({ role }: SidebarProps) {
                             minWidth: 0,
                             mr: collapsed ? 0 : 2,
                             justifyContent: 'center',
-                            color: 'inherit',
+                            color: 'inherit', // <-- Inherit color from ListItem
                           }}
                         >
                           {item.icon}
