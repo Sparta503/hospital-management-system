@@ -6,27 +6,15 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AdminSidebar from '@/components/admin/Sidebar';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 
-  // Set client-side rendering
+  useEffect(() => { setIsClient(true); }, []);
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Redirect to login if not authenticated or not an admin
-  useEffect(() => {
-    if (!user) {
-      router.push('/login');
-    } else if (user.role !== 'admin') {
-      router.push(`/${user.role}/dashboard`);
-    }
+    if (!user) router.push('/login');
+    else if (user.role !== 'admin') router.push(`/${user.role}/dashboard`);
   }, [user, router]);
 
   if (!isClient || !user || user.role !== 'admin') {
@@ -40,16 +28,7 @@ export default function AdminLayout({
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       <AdminSidebar />
-      <Box 
-        component="main" 
-        sx={{ 
-          flexGrow: 1,
-          width: { md: `calc(100% - 240px)` },
-          ml: { md: '240px' },
-          p: 0,
-          m: 0,
-        }}
-      >
+      <Box component="main" sx={{ flexGrow: 1, width: '100%', p: 0, m: 0 }}>
         {children}
       </Box>
     </Box>
