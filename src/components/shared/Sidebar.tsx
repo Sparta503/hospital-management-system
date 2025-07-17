@@ -105,7 +105,7 @@ const menuItems: MenuSection[] = [
       },
       {
         label: 'Logout',
-        path: '/logout',
+        path: '/logout',  // This will match the route in the app directory
         icon: <LogoutIcon />,
         view: 'logout',
         roles: ['patient', 'doctor', 'admin']
@@ -122,7 +122,7 @@ export default function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const theme = useTheme();
-  const { logout } = useAuth();
+  useAuth(); // We don't need the logout function anymore as we're using the logout page
   const setActiveView = useViewStore((state) => state.setActiveView);
   const [mounted, setMounted] = useState(false);
   const [filteredMenu, setFilteredMenu] = useState<MenuSection[]>([]);
@@ -160,8 +160,8 @@ export default function Sidebar({ role }: SidebarProps) {
 
   const handleItemClick = (view: string, path: string) => {
     if (path === '/logout') {
-      logout();
-      router.push('/login');
+      // Navigate to the logout page instead of direct logout
+      router.push('/logout');
       return;
     }
     
