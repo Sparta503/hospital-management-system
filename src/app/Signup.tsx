@@ -5,9 +5,11 @@ import { FaUser, FaBuilding, FaEnvelope, FaLock, FaCheck } from 'react-icons/fa'
 import { Field } from './components/form/InputFields';
 
 type SignupFormProps = {
-  userType: string;
   onBackToLogin: () => void;
+  userType?: string; // Made optional since it's not used
 };
+
+type UserRole = 'patient' | 'doctor' | 'admin';
 
 type FormData = {
   email: string;
@@ -15,9 +17,10 @@ type FormData = {
   confirmPassword: string;
   name: string;
   organization: string;
+  role: UserRole;
 };
 
-export default function SignupForm({ userType, onBackToLogin }: SignupFormProps) {
+export default function SignupForm({ onBackToLogin }: SignupFormProps) {
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -25,6 +28,7 @@ export default function SignupForm({ userType, onBackToLogin }: SignupFormProps)
     confirmPassword: '',
     name: '',
     organization: '',
+    role: 'patient',
   });
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -61,18 +65,64 @@ export default function SignupForm({ userType, onBackToLogin }: SignupFormProps)
     }
   };
 
-  return (
-    <div className="w-full h-screen bg-blue-900 flex items-center justify-center">
-      <div className="w-full max-w-md mx-auto p-6">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight">Create Account</h1>
-          <p className="text-white text-lg font-medium">Sign up as {userType}</p>
-        </div>
+  const borderGradient = `linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899, #f59e0b, #10b981, #3b82f6)`;
 
-        <form
-          onSubmit={handleSubmit}
-          className="w-full space-y-6 bg-blue-800 p-8 rounded-2xl shadow-xl border-2 border-blue-500"
-        >
+  return (
+    <>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight">Create Account</h1>
+        <p className="text-white text-lg font-medium">Join as a {formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}</p>
+      </div>
+
+      <div className="relative group">
+        {/* Outer glow */}
+        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 opacity-75 blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+        
+        {/* Middle glow */}
+        <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-blue-400 to-purple-500 opacity-60 blur-sm group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+        
+        {/* Main border */}
+        <div className="relative p-[1px] rounded-2xl" style={{
+          background: borderGradient,
+          backgroundSize: '300% 300%',
+          animation: 'gradient 15s ease infinite',
+        }}>
+          <form
+            onSubmit={handleSubmit}
+            className="w-full space-y-6 bg-blue-900 p-8 relative rounded-2xl"
+          >
+            {/* Role Selection */}
+            <div className="mb-4">
+              <div className="flex items-center justify-center space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, role: 'patient' }))}
+                  className={`px-4 py-2 rounded-full transition-colors duration-200 hover:scale-105 hover:shadow-lg ${
+                    formData.role === 'patient' ? 'bg-blue-600 text-white' : 'bg-blue-800 text-blue-300'
+                  }`}
+                >
+                  Patient
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, role: 'doctor' }))}
+                  className={`px-4 py-2 rounded-full transition-colors duration-200 hover:scale-105 hover:shadow-lg ${
+                    formData.role === 'doctor' ? 'bg-blue-600 text-white' : 'bg-blue-800 text-blue-300'
+                  }`}
+                >
+                  Doctor
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, role: 'admin' }))}
+                  className={`px-4 py-2 rounded-full transition-colors duration-200 hover:scale-105 hover:shadow-lg ${
+                    formData.role === 'admin' ? 'bg-blue-600 text-white' : 'bg-blue-800 text-blue-300'
+                  }`}
+                >
+                  Admin
+                </button>
+              </div>
+            </div>
           {error && (
             <div className="bg-red-900 border-l-4 border-red-500 text-white px-4 py-3 rounded-r">
               <p className="font-medium">{error}</p>
@@ -95,15 +145,18 @@ export default function SignupForm({ userType, onBackToLogin }: SignupFormProps)
             isLoading={isLoading}
           />
 
-          <Field
-            id="organization"
-            name="organization"
-            label="Organization Name"
-            icon={<FaBuilding className="h-5 w-5 text-blue-300 animate-pulse" />}
-            value={formData.organization}
-            onChange={handleChange}
-            isLoading={isLoading}
-          />
+          {formData.role !== 'patient' && (
+            <Field
+              id="organization"
+              name="organization"
+              label={formData.role === 'doctor' ? 'Hospital/Clinic' : 'Organization'}
+              icon={<FaBuilding className="h-5 w-5 text-blue-300 animate-pulse" />}
+              value={formData.organization}
+              onChange={handleChange}
+              isLoading={isLoading}
+              required={formData.role === 'doctor' || formData.role === 'admin'}
+            />
+          )}
 
           <Field
             id="email"
@@ -165,8 +218,25 @@ export default function SignupForm({ userType, onBackToLogin }: SignupFormProps)
               </button>
             </p>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+      <style jsx global>{`
+        @keyframes gradient {
+          0% { 
+            background-position: 0% 50%;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+          }
+          50% { 
+            background-position: 100% 50%;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.7);
+          }
+          100% { 
+            background-position: 0% 50%;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+          }
+        }
+      `}</style>
+    </>
   );
 }
