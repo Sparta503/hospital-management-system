@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, FormEvent, MouseEvent } from 'react';
+import { useState, useRef, FormEvent } from 'react';
 import Signup from './Signup';
 import { FaUser, FaEnvelope, FaLock, FaUserMd, FaUserCog } from 'react-icons/fa';
 import { useAuth } from './contexts/AuthContext';
@@ -15,7 +15,6 @@ export default function LoginForm() {
   const [showSignup, setShowSignup] = useState<boolean>(false);
   const [userType, setUserType] = useState<'patient' | 'doctor' | 'admin'>('patient');
   const [rememberMe, setRememberMe] = useState<boolean>(false);
-  const [borderPosition, setBorderPosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
   const formRef = useRef<HTMLFormElement | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -48,13 +47,7 @@ export default function LoginForm() {
     }
   };
 
-  const handleMouseMove = (e: MouseEvent<HTMLFormElement>) => {
-    if (!formRef.current) return;
-    const rect = formRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setBorderPosition({ x, y });
-  };
+
 
   const handleSignup = () => setShowSignup(true);
   const handleBackToLogin = () => setShowSignup(false);
@@ -63,14 +56,10 @@ export default function LoginForm() {
   };
 
   if (showSignup) {
-    return <Signup userType={userType} onBackToLogin={handleBackToLogin} />;
+    return <Signup onBackToLogin={handleBackToLogin} />;
   }
 
-  const borderImage = `radial-gradient(circle at ${borderPosition.x}% ${borderPosition.y}%, 
-    rgba(56,189,248,0.9) 25%, 
-    rgba(30,64,175,0.7) 65%, 
-    rgba(30,64,175,0.2) 90%, 
-    rgba(30,64,175,0) 100%) 1`;
+  const borderGradient = `linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899, #f59e0b, #10b981, #3b82f6)`;
 
   return (
     <>
@@ -81,33 +70,24 @@ export default function LoginForm() {
         <p className="text-white text-lg font-medium">Login to continue</p>
       </div>
 
-      <form
-        ref={formRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setBorderPosition({ x: 50, y: 50 })}
-        onSubmit={handleSubmit}
-        className="w-full space-y-6 bg-blue-800 p-8 shadow-xl relative overflow-hidden rounded-2xl"
-        style={{
-          // Remove the border property from here!
-        }}
-      >
-        {/* Magic border */}
-        <span
-          className="pointer-events-none absolute inset-0 z-20"
-          aria-hidden
-          style={{
-            borderRadius: '1rem',
-            border: '2px solid transparent',
-            background: borderImage,
-            WebkitMask:
-              'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-            WebkitMaskComposite: 'xor',
-            maskComposite: 'exclude',
-            zIndex: 1,
-            transition: 'background 0.2s',
-            // The border is only visible, not solid, and follows the mouse
-          }}
-        />
+      <div className="relative group">
+        {/* Outer glow */}
+        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 opacity-75 blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+        
+        {/* Middle glow */}
+        <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-blue-400 to-purple-500 opacity-60 blur-sm group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+        
+        {/* Main border */}
+        <div className="relative p-[1px] rounded-2xl" style={{
+          background: borderGradient,
+          backgroundSize: '300% 300%',
+          animation: 'gradient 15s ease infinite',
+        }}>
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="w-full space-y-6 bg-blue-900 p-8 relative rounded-2xl"
+        >
 
         <div className="flex items-center justify-center mb-6 relative z-10 group">
           <div className="bg-blue-600 p-3 rounded-full transition-all duration-200 group-hover:scale-110 group-hover:shadow-lg">
@@ -249,7 +229,25 @@ export default function LoginForm() {
             </button>
           </p>
         </div>
-      </form>
+        </form>
+        </div>
+      </div>
+      <style jsx global>{`
+        @keyframes gradient {
+          0% { 
+            background-position: 0% 50%;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+          }
+          50% { 
+            background-position: 100% 50%;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.7);
+          }
+          100% { 
+            background-position: 0% 50%;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+          }
+        }
+      `}</style>
     </>
   );
 }
