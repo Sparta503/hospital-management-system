@@ -1,26 +1,62 @@
 'use client';
 
-import { Box, Container, Typography, Button, List, ListItem, ListItemAvatar, ListItemText, Avatar } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import SearchBar from '@/components/SearchBar'
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import GroupIcon from '@mui/icons-material/Group';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+
 import MessageIcon from '@mui/icons-material/Message';
+import { TrendingUp as TrendingUpIcon } from '@mui/icons-material';
+import NewAppointmentButton from './NewApointmentButton';
+import UpcomingAppointments from './UpcomingAppointments';
+import RecentAppointments from './RecentAppointments';
+import ViewTaskButton from './ViewTask';
+import MessagesButton from './messages';
+import SmallBarChart from './barchart';
 
-const mockAppointments = [
-  { id: 1, patient: 'John Doe', time: '09:00 AM', type: 'Checkup' },
-  { id: 2, patient: 'Jane Smith', time: '10:30 AM', type: 'Consultation' },
-  { id: 3, patient: 'Sam Wilson', time: '01:00 PM', type: 'Follow-up' },
-];
+interface StatsCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  change: string;
+  iconBg?: string;
+}
 
-const mockPatients = [
-  { id: 1, name: 'John Doe', lastVisit: '2025-07-10' },
-  { id: 2, name: 'Jane Smith', lastVisit: '2025-07-09' },
-  { id: 3, name: 'Sam Wilson', lastVisit: '2025-07-08' },
-];
+const StatsCard: React.FC<StatsCardProps> = ({ 
+  title, 
+  value, 
+  icon, 
+  change,
+  iconBg = 'bg-gradient-to-br from-blue-600 to-blue-800'
+}) => {
+  return (
+    <div className="p-4 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 w-full max-w-full md:max-w-[170px] mx-auto border border-blue-400/20 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+      <div className={`absolute top-0 right-0 w-10 h-10 sm:w-12 sm:h-12 ${iconBg} rounded-bl-full transform rotate-45 translate-x-4 sm:translate-x-6 -translate-y-4 sm:-translate-y-6`} />
+      <div className="flex justify-between items-center mb-2 sm:mb-3">
+        <span className="font-semibold text-xs sm:text-sm tracking-wide text-blue-100">
+          {title}
+        </span>
+        <span className="text-blue-200 hover:scale-110 transition-transform animate-bounce relative z-10">
+          {icon}
+        </span>
+      </div>
+      <div className="font-bold mb-1 sm:mb-2 text-xl sm:text-2xl tracking-tight text-white animate-pulse">
+        {value}
+      </div>
+      <div className="flex items-center">
+        <TrendingUpIcon className="text-blue-200 mr-1 animate-pulse" fontSize="small" />
+        <span className="text-blue-200 font-medium text-xs">{change}</span>
+      </div>
+    </div>
+  );
+};
+
+
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
@@ -50,214 +86,80 @@ export default function DoctorDashboard() {
   }
 
   return (
-    <Box sx={{ width: '100%', bgcolor: 'background.default' }}>
-      <Container
-       maxWidth={false} 
-        sx={{ 
-          p: 3, 
-          m: 0, 
-          width: 'calc(100% - 80px)',
-          maxWidth: '100% !important',
-          ml: '40px',
-          mr: '40px',
-        }}
-      >
-        <div className="space-y-6 w-full">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Welcome back, Dr. {user.name}!</h1>
-              <p className="text-gray-600 mt-1">Here’s your dashboard overview for today.</p>
-            </div>
-            <div className="mt-4 md:mt-0 ml-4">
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddCircleOutlineIcon />}
-                onClick={() => router.push('/doctor/appointments/new')}
-                sx={{ fontWeight: 600, px: 4, py: 1.5, borderRadius: 2 }}
-              >
-                New Appointment
-              </Button>
-            </div>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="relative">
-            <div className="absolute inset-0 -z-10 overflow-hidden">
-              <div className="absolute left-0 top-0 h-full w-full bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:24px_24px] opacity-20"></div>
-            </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {/* Appointments Today */}
-              <div className="relative group p-0.5 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full">
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-xl"></div>
-                <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl blur opacity-0 group-hover:opacity-70 transition duration-300"></div>
-                <div className="relative bg-white rounded-xl p-5 h-full flex items-center">
-                  <div className="flex-shrink-0 bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-xl p-3 shadow-md">
-                    <EventNoteIcon fontSize="large" />
-                  </div>
-                  <div className="ml-4 flex-1">
-                    <h3 className="text-sm font-medium text-gray-500">Appointments Today</h3>
-                    <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">12</p>
-                  </div>
-                </div>
+    <div className="container mx-auto px-4 py-8">
+      <SearchBar />
+      <div className="mb-8 mt-6 flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-black">Welcome back, Dr {user?.name}!</h1>
+          <p className="text-black">Here’s your dashboard overview for today.</p>
+        </div>
+        {/* No action buttons here, moved to Quick Actions below */}
+      </div>
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10 mt-6 sm:mt-10">
+        {[
+          {
+            title: 'Appointments Today',
+            value: 12,
+            icon: <EventNoteIcon fontSize="small" />,
+            change: '2 scheduled',
+            iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
+          },
+          {
+            title: 'Total Patients',
+            value: 84,
+            icon: <GroupIcon fontSize="small" />,
+            change: '3 new',
+            iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
+          },
+          {
+            title: 'Pending Tasks',
+            value: 5,
+            icon: <AssignmentIcon fontSize="small" />,
+            change: '1 urgent',
+            iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
+          },
+          {
+            title: 'Messages',
+            value: 7,
+            icon: <MessageIcon fontSize="small" />,
+            change: '2 unread',
+            iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
+          },
+        ].map((stat, idx) => (
+          <StatsCard
+            key={idx}
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            change={stat.change}
+            iconBg={stat.iconBg}
+          />
+        ))}
+      </div>
+      {/* Appointments and Quick Actions side by side */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        {/* Appointments section (2/3 width on desktop) */}
+        <div className="md:col-span-2 flex flex-col gap-6">
+          <UpcomingAppointments />
+          <RecentAppointments />
+        </div>
+        {/* Quick Actions (1/3 width on desktop) */}
+        <div>
+          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4 items-start">
+            <h2 className="text-lg font-bold text-blue-700 mb-2">Quick Actions</h2>
+            <div className="flex flex-col gap-4 w-full">
+              <div className="flex flex-col md:flex-row gap-4 w-full">
+                <NewAppointmentButton />
+                <ViewTaskButton />
               </div>
-              {/* Total Patients */}
-              <div className="relative group p-0.5 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full">
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-xl"></div>
-                <div className="absolute -inset-0.5 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl blur opacity-0 group-hover:opacity-70 transition duration-300"></div>
-                <div className="relative bg-white rounded-xl p-5 h-full flex items-center">
-                  <div className="flex-shrink-0 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-3 shadow-md">
-                    <GroupIcon fontSize="large" />
-                  </div>
-                  <div className="ml-4 flex-1">
-                    <h3 className="text-sm font-medium text-gray-500">Total Patients</h3>
-                    <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-500">84</p>
-                  </div>
-                </div>
-              </div>
-              {/* Pending Tasks */}
-              <div className="relative group p-0.5 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full">
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-xl"></div>
-                <div className="absolute -inset-0.5 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl blur opacity-0 group-hover:opacity-70 transition duration-300"></div>
-                <div className="relative bg-white rounded-xl p-5 h-full flex items-center">
-                  <div className="flex-shrink-0 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-xl p-3 shadow-md">
-                    <AssignmentIcon fontSize="large" />
-                  </div>
-                  <div className="ml-4 flex-1">
-                    <h3 className="text-sm font-medium text-gray-500">Pending Tasks</h3>
-                    <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-orange-500">5</p>
-                  </div>
-                </div>
-              </div>
+              <MessagesButton />
             </div>
           </div>
-
-          {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Upcoming Appointments */}
-            <div className="lg:col-span-2">
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">Upcoming Appointments</h3>
-                  <Button
-                    onClick={() => router.push('/doctor/appointments')}
-                    size="small"
-                    sx={{ textTransform: 'none' }}
-                  >
-                    View All
-                  </Button>
-                </div>
-                <div>
-                  <List>
-                    {mockAppointments.map((appt) => (
-                      <ListItem key={appt.id} divider>
-                        <ListItemAvatar>
-                          <Avatar>
-                            <EventNoteIcon />
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={`${appt.patient} (${appt.type})`}
-                          secondary={appt.time}
-                        />
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          onClick={() => router.push(`/doctor/appointments/${appt.id}`)}
-                        >
-                          Details
-                        </Button>
-                      </ListItem>
-                    ))}
-                  </List>
-                </div>
-              </div>
-
-              {/* Recent Patients Section */}
-              <div className="bg-white shadow rounded-lg overflow-hidden mt-6">
-                <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">Recent Patients</h3>
-                  <Button
-                    onClick={() => router.push('/doctor/patients')}
-                    size="small"
-                    sx={{ textTransform: 'none' }}
-                  >
-                    View All
-                  </Button>
-                </div>
-                <div>
-                  <List>
-                    {mockPatients.map((patient) => (
-                      <ListItem key={patient.id} divider>
-                        <ListItemAvatar>
-                          <Avatar>
-                            <GroupIcon />
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={patient.name}
-                          secondary={`Last visit: ${new Date(patient.lastVisit).toLocaleDateString()}`}
-                        />
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          onClick={() => router.push(`/doctor/patients/${patient.id}`)}
-                        >
-                          View
-                        </Button>
-                      </ListItem>
-                    ))}
-                  </List>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="space-y-6">
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-200">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">Quick Actions</h3>
-                </div>
-                <div className="p-4">
-                  <div className="grid grid-cols-1 gap-4">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      startIcon={<AddCircleOutlineIcon />}
-                      onClick={() => router.push('/doctor/appointments/new')}
-                      sx={{ mb: 2, textTransform: 'none' }}
-                    >
-                      New Appointment
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      fullWidth
-                      startIcon={<AssignmentIcon />}
-                      onClick={() => router.push('/doctor/tasks')}
-                      sx={{ mb: 2, textTransform: 'none' }}
-                    >
-                      View Tasks
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      fullWidth
-                      startIcon={<MessageIcon />}
-                      onClick={() => router.push('/doctor/messages')}
-                      sx={{ textTransform: 'none' }}
-                    >
-                      Messages
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="mt-20 flex justify-center w-full">
+            <SmallBarChart />
           </div>
         </div>
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 }
