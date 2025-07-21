@@ -3,7 +3,7 @@
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import SearchBar from './searchbar';
+import SearchBar from '@/components/SearchBar';
 import AppointmentsSection from './AppointmentsSection';
 import QuickActions from './QuickActions';
 import RecentRecords from './RecentRecords';
