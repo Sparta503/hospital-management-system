@@ -45,12 +45,12 @@ const QuickActions: React.FC = () => {
           <button
             key={action.id}
             onClick={action.onClick}
-            className="flex flex-col items-center justify-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex flex-col items-center justify-center p-4 border rounded-lg bg-gray-300 hover:bg-blue-500 hover:text-white transition-colors duration-200 group"
           >
             <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 mb-2">
               {action.icon}
             </div>
-            <span className="text-sm font-medium text-black">{action.title}</span>
+            <span className="text-sm font-medium text-black group-hover:text-white">{action.title}</span>
           </button>
         ))}
       </div>
