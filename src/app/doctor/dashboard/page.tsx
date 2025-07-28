@@ -86,21 +86,38 @@ export default function DoctorDashboard() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <SearchBar />
-      <div className="mb-8 mt-6 flex flex-col md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-black">Welcome back, Dr {user?.name}!</h1>
-          <p className="text-black">Here’s your dashboard overview for today.</p>
+    <div className="min-h-screen w-full bg-blue-500">
+      <div className="container mx-auto px-4 py-8">
+        <SearchBar />
+        <div className="mb-8 mt-6 flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+              <span className="inline-block rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-700 p-1 shadow-lg transition-transform duration-300 hover:scale-110 hover:shadow-blue-300/80 animate-blink group relative">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                </svg>
+                <style jsx>{`
+                  @keyframes blink {
+                    0%, 100% { opacity: 1; }
+                    45% { opacity: 1; }
+                    50% { opacity: 0.2; }
+                    55% { opacity: 1; }
+                  }
+                  .animate-blink { animation: blink 2s infinite; }
+                `}</style>
+              </span>
+              Welcome back, Dr {user?.name}!
+            </h1>
+            <p className="text-white">Here’s your dashboard overview for today.</p>
+          </div>
+          {/* No action buttons here, moved to Quick Actions below */}
         </div>
-        {/* No action buttons here, moved to Quick Actions below */}
-      </div>
-      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10 mt-6 sm:mt-10">
-        {[
-          {
-            title: 'Appointments Today',
-            value: 12,
-            icon: <EventNoteIcon fontSize="small" />,
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10 mt-6 sm:mt-10">
+          {[
+            {
+              title: 'Appointments Today',
+              value: 12,
+              icon: <EventNoteIcon fontSize="small" />,
             change: '2 scheduled',
             iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
           },
@@ -135,28 +152,29 @@ export default function DoctorDashboard() {
             iconBg={stat.iconBg}
           />
         ))}
-      </div>
-      {/* Appointments and Quick Actions side by side */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        {/* Appointments section (2/3 width on desktop) */}
-        <div className="md:col-span-2 flex flex-col gap-6">
-          <UpcomingAppointments />
-          <RecentAppointments />
         </div>
-        {/* Quick Actions (1/3 width on desktop) */}
-        <div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4 items-start">
-            <h2 className="text-lg font-bold text-blue-700 mb-2">Quick Actions</h2>
-            <div className="flex flex-col gap-4 w-full">
-              <div className="flex flex-col md:flex-row gap-4 w-full">
-                <NewAppointmentButton />
-                <ViewTaskButton />
-              </div>
-              <MessagesButton />
-            </div>
+        {/* Appointments and Quick Actions side by side */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          {/* Appointments section (2/3 width on desktop) */}
+          <div className="md:col-span-2 flex flex-col gap-6">
+            <UpcomingAppointments />
+            <RecentAppointments />
           </div>
-          <div className="mt-20 flex justify-center w-full">
-            <SmallBarChart />
+          {/* Quick Actions (1/3 width on desktop) */}
+          <div>
+            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4 items-start">
+              <h2 className="text-lg font-bold text-blue-700 mb-2">Quick Actions</h2>
+              <div className="flex flex-col gap-4 w-full">
+                <div className="flex flex-col md:flex-row gap-4 w-full">
+                  <NewAppointmentButton />
+                  <ViewTaskButton />
+                </div>
+                <MessagesButton />
+              </div>
+            </div>
+            <div className="mt-20 flex justify-center w-full">
+              <SmallBarChart />
+            </div>
           </div>
         </div>
       </div>
