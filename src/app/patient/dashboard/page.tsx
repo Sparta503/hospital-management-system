@@ -138,37 +138,51 @@ export default function PatientDashboard() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <SearchBar />
-      
-      <div className="mb-8 mt-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-black">Welcome back, {user.name}!</h1>
-        <p className="text-black">Here&apos;s what&apos;s happening with your health today</p>
-      </div>
-
-      <DashboardCards />
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-1">
-          <AppointmentTypesChart />
+    <div className="min-h-screen w-full bg-blue-500">
+      <div className="container mx-auto px-4 py-8">
+        <SearchBar />
+        <div className="mb-8 mt-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+            <span className="inline-block rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-700 p-1 shadow-lg transition-transform duration-300 hover:scale-110 hover:shadow-blue-300/80 animate-blink group relative">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+  </svg>
+  <style jsx>{`
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      45% { opacity: 1; }
+      50% { opacity: 0.2; }
+      55% { opacity: 1; }
+    }
+    .animate-blink { animation: blink 2s infinite; }
+  `}</style>
+</span>
+            Welcome back, {user.name}!
+          </h1>
+          <p className="text-white">Here&apos;s what&apos;s happening with your health today</p>
         </div>
-        <div className="lg:col-span-1">
-          <HealthStatusChart />
+        <DashboardCards />
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-1">
+            <AppointmentTypesChart />
+          </div>
+          <div className="lg:col-span-1">
+            <HealthStatusChart />
+          </div>
+          <div className="lg:col-span-1">
+            <WeeklyActivityChart />
+          </div>
         </div>
-        <div className="lg:col-span-1">
-          <WeeklyActivityChart />
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2 space-y-6">
-          <AppointmentsSection />
-          <RecentRecords />
-        </div>
-        <div className="lg:col-span-1">
-          <QuickActions />
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2 space-y-6">
+            <AppointmentsSection />
+            <RecentRecords />
+          </div>
+          <div className="lg:col-span-1">
+            <QuickActions />
+          </div>
         </div>
       </div>
     </div>
