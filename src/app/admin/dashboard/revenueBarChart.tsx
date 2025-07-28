@@ -106,55 +106,50 @@ const RevenueBarChart = () => {
   }), []);
 
   return (
-    <div style={{ width: 300, height: 420, paddingBottom: 24 }} className="flex flex-col items-center md:ml-[-30px]">
+    <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center w-full max-w-[520px] mx-auto">
       <div className="font-semibold text-blue-700 text-sm mb-2">Revenue by Source</div>
       {/* SVG filter for glowing shadow */}
       <svg width="0" height="0">
         <defs>
-          {/* Glossy highlight overlay for 3D illusion */}
           <linearGradient id="barGloss" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#fff" stopOpacity="0.55" />
             <stop offset="30%" stopColor="#fff" stopOpacity="0.12" />
             <stop offset="100%" stopColor="#fff" stopOpacity="0" />
           </linearGradient>
-          {/* Glowing shadow for 3D pop */}
           <filter id="barGlow" x="-30%" y="-30%" width="160%" height="160%">
             <feDropShadow dx="0" dy="12" stdDeviation="14" floodColor="#67e8f9" floodOpacity="0.38" />
           </filter>
         </defs>
       </svg>
-      <div style={{ width: 500, height: 400 }}>
-        <div style={{position: 'relative', width: 500, height: 400}}>
-          <ReactApexChart 
-            options={{
-              ...options,
-              chart: {
-                ...options.chart,
-                dropShadow: {
-                  enabled: true,
-                  top: 0,
-                  left: 0,
-                  blur: 20,
-                  color: '#67e8f9',
-                  opacity: 0.28,
-                },
+      <div style={{ width: 480, height: 380, position: 'relative' }}>
+        <ReactApexChart 
+          options={{
+            ...options,
+            chart: {
+              ...options.chart,
+              dropShadow: {
+                enabled: true,
+                top: 0,
+                left: 0,
+                blur: 20,
+                color: '#67e8f9',
+                opacity: 0.28,
               },
-              plotOptions: {
-                ...options.plotOptions,
-                bar: {
-                  ...options.plotOptions.bar,
-                  borderRadius: 12,
-                  barHeight: '80%',
-                },
+            },
+            plotOptions: {
+              ...options.plotOptions,
+              bar: {
+                ...options.plotOptions.bar,
+                borderRadius: 12,
+                barHeight: '80%',
               },
-            }}
-            series={series}
-            type="bar"
-            height={400}
-            width={500}
-          />
-
-        </div>
+            },
+          }}
+          series={series}
+          type="bar"
+          height={380}
+          width={480}
+        />
       </div>
     </div>
   );
