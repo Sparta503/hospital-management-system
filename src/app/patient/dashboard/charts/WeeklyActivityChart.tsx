@@ -11,13 +11,21 @@ const WeeklyActivityChart = () => {
       height: 350,
       toolbar: {
         show: false
+      },
+      dropShadow: {
+        enabled: true,
+        top: 0,
+        left: 0,
+        blur: 16,
+        color: '#60a5fa',
+        opacity: 0.18,
       }
     },
     plotOptions: {
       bar: {
-        borderRadius: 4,
+        borderRadius: 12,
         horizontal: false,
-        columnWidth: '55%',
+        columnWidth: '50%',
       },
     },
     dataLabels: {
@@ -26,9 +34,24 @@ const WeeklyActivityChart = () => {
     xaxis: {
       categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     },
-    colors: ['#3B82F6'],
+    colors: ['#2563eb', '#60a5fa'],
     fill: {
-      opacity: 1
+      type: 'gradient',
+      gradient: {
+        shade: 'light',
+        type: 'vertical',
+        shadeIntensity: 0.4,
+        gradientToColors: ['#60a5fa'],
+        inverseColors: false,
+        opacityFrom: 0.95,
+        opacityTo: 0.85,
+        stops: [0, 100]
+      }
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['#fff'],
     },
     tooltip: {
       y: {
