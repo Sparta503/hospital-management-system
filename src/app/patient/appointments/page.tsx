@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { FaUser, FaCalendarAlt, FaClock, FaStethoscope, FaInfoCircle, FaCheckCircle, FaPlus, FaHospitalUser } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
 
 interface Appointment {
   id: number;
@@ -158,8 +157,6 @@ const PatientAppointments: React.FC = () => {
     }
   }, [visibleCount]);
 
-  const graphContainerClass = "w-full h-[400px] group cursor-pointer transition-transform duration-200 hover:scale-105 flex items-center";
-  const graphInnerClass = "w-full h-full transition-shadow duration-200 group-hover:shadow-2xl group-hover:shadow-blue-500/20 rounded-lg flex items-center";
 
   const getStatusBadge = (status: string) => {
     switch (status) {
