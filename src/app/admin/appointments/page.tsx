@@ -1,169 +1,421 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Search, CalendarDays, UserCircle, Stethoscope, CheckCircle2, XCircle, Eye, RotateCcw } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { FaUser, FaCalendarAlt, FaClock, FaStethoscope, FaInfoCircle, FaCheckCircle, FaPlus, FaHospitalUser } from 'react-icons/fa';
 
-const sampleAppointments = [
+interface Appointment {
+  id: number;
+  title: string;
+  doctor: string;
+  date: string;
+  time: string;
+  status: 'pending' | 'accepted' | 'declined';
+  type: 'checkup' | 'follow-up' | 'consultation' | 'procedure';
+  notes?: string;
+  imageUrl?: string;
+}
+
+
+const appointmentsData: Appointment[] = [
   {
     id: 1,
-    patient: 'Alice Smith',
-    doctor: 'Dr. Johnson',
-    field: 'Cardiology',
-    date: '2025-08-02',
+    title: 'Annual Physical Exam',
+    doctor: 'Dr. Sarah Johnson',
+    date: '2023-08-30',
     time: '10:00 AM',
-    status: 'Scheduled',
+    status: 'pending',
+    type: 'checkup',
+    notes: 'Routine annual checkup',
+    imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=200&q=80'
   },
   {
     id: 2,
-    patient: 'Bob Lee',
-    doctor: 'Dr. Chen',
-    field: 'Neurology',
-    date: '2025-08-03',
-    time: '1:30 PM',
-    status: 'Completed',
+    title: 'Follow-up Consultation',
+    doctor: 'Dr. Michael Chen',
+    date: '2023-08-31',
+    time: '2:30 PM',
+    status: 'pending',
+    type: 'follow-up',
+    notes: 'Follow up on blood test results',
+    imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=200&q=80'
   },
   {
     id: 3,
-    patient: 'Clara Evans',
-    doctor: 'Dr. Patel',
-    field: 'Pediatrics',
-    date: '2025-08-04',
-    time: '09:00 AM',
-    status: 'Scheduled',
+    title: 'Dermatology Consultation',
+    doctor: 'Dr. Robert Chen',
+    date: '2023-09-02',
+    time: '9:15 AM',
+    status: 'pending',
+    type: 'consultation',
+    notes: 'Skin condition evaluation',
+    imageUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8a25d00?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    id: 4,
+    title: 'Physical Therapy',
+    doctor: 'Dr. Jennifer Lee',
+    date: '2023-09-05',
+    time: '3:45 PM',
+    status: 'accepted',
+    type: 'procedure',
+    notes: 'Knee rehabilitation session',
+    imageUrl: 'https://images.unsplash.com/photo-1571019614242-c6e2ba0c50b1?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    id: 5,
+    title: 'Cardiology Checkup',
+    doctor: 'Dr. David Kim',
+    date: '2023-09-10',
+    time: '11:30 AM',
+    status: 'accepted',
+    type: 'checkup',
+    notes: 'Annual heart health check',
+    imageUrl: 'https://images.unsplash.com/photo-1551076805-e4c3dab1407a?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    id: 6,
+    title: 'Eye Examination',
+    doctor: 'Dr. Lisa Wong',
+    date: '2023-09-12',
+    time: '2:00 PM',
+    status: 'pending',
+    type: 'checkup',
+    notes: 'Comprehensive eye exam',
+    imageUrl: 'https://images.unsplash.com/photo-1573497491765-dccce02b29df?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    id: 7,
+    title: 'Pediatric Checkup',
+    doctor: 'Dr. Maria Garcia',
+    date: '2023-09-15',
+    time: '10:45 AM',
+    status: 'declined',
+    type: 'checkup',
+    notes: 'Child wellness visit',
+    imageUrl: 'https://images.unsplash.com/photo-1551190820-a2333f6a46a3?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    id: 8,
+    title: 'Orthopedic Consultation',
+    doctor: 'Dr. James Wilson',
+    date: '2023-09-18',
+    time: '1:30 PM',
+    status: 'pending',
+    type: 'consultation',
+    notes: 'Back pain evaluation',
+    imageUrl: 'https://images.unsplash.com/photo-1599045118108-bb99543c1c17?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    id: 9,
+    title: 'Nutrition Counseling',
+    doctor: 'Dr. Rachel Adams',
+    date: '2023-09-20',
+    time: '4:15 PM',
+    status: 'accepted',
+    type: 'consultation',
+    notes: 'Diet and nutrition planning',
+    imageUrl: 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    id: 10,
+    title: 'Dental Checkup',
+    doctor: 'Dr. Emily Wilson',
+    date: '2023-09-22',
+    time: '11:15 AM',
+    status: 'pending',
+    type: 'checkup',
+    notes: 'Regular dental cleaning and checkup',
+    imageUrl: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=200&q=80'
   },
 ];
 
-const fields = ['All', 'Cardiology', 'Neurology', 'Pediatrics'];
+const INITIAL_VISIBLE = 3;
+const EXPANDED_VISIBLE = 10;
+const INITIAL_MAX_HEIGHT = '350px';
+const EXPANDED_MAX_HEIGHT = '600px';
 
-export default function AdminAppointmentsPage() {
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('All');
-  const [selected, setSelected] = useState<number[]>([]);
+const AdminAppointments: React.FC = () => {
+  const [appointments, setAppointments] = useState<Appointment[]>(appointmentsData);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const [maxHeight, setMaxHeight] = useState(INITIAL_MAX_HEIGHT);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const filtered = sampleAppointments.filter(
-    (appt) =>
-      (filter === 'All' || appt.field === filter) &&
-      (appt.patient.toLowerCase().includes(search.toLowerCase()) ||
-        appt.doctor.toLowerCase().includes(search.toLowerCase()) ||
-        appt.field.toLowerCase().includes(search.toLowerCase()))
-  );
+  const showMore = () => {
+    setVisibleCount(EXPANDED_VISIBLE);
+    setMaxHeight(EXPANDED_MAX_HEIGHT);
+  };
 
-  const handleSelect = (id: number) => {
-    setSelected((prev) => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  const showLess = () => {
+    setVisibleCount(INITIAL_VISIBLE);
+    setMaxHeight(INITIAL_MAX_HEIGHT);
   };
-  const handleSelectAll = () => {
-    setSelected(filtered.length === selected.length ? [] : filtered.map(a => a.id));
+
+  useEffect(() => {
+    if (visibleCount === EXPANDED_VISIBLE) {
+      setMaxHeight(EXPANDED_MAX_HEIGHT);
+    } else {
+      setMaxHeight(INITIAL_MAX_HEIGHT);
+    }
+  }, [visibleCount]);
+
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'accepted':
+        return 'bg-green-100 text-green-800';
+      case 'declined':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
-  const handleCancel = (id: number) => {
-    alert(`Cancel appointment ${id}`);
-  };
-  const handleBulkCancel = () => {
-    alert(`Cancel appointments: ${selected.join(', ')}`);
+
+  const getTypeBadge = (type: string) => {
+    switch (type) {
+      case 'checkup':
+        return 'bg-purple-100 text-purple-800';
+      case 'follow-up':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'consultation':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'procedure':
+        return 'bg-pink-100 text-pink-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-200 to-indigo-100 py-12 px-2 sm:px-8 flex flex-col items-center">
-      <h1 className="text-3xl font-bold text-blue-900 mb-8 drop-shadow-xl flex items-center gap-3">
-        <CalendarDays className="w-8 h-8 text-blue-600" />
-        Appointments Management
-      </h1>
-      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-lg p-8">
-        {/* Search & Filter */}
-        <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-          <div className="flex items-center bg-blue-50 rounded-lg px-3 py-2 flex-1">
-            <Search className="w-5 h-5 text-blue-400 mr-2" />
-            <input
-              type="text"
-              className="bg-transparent outline-none flex-1 text-blue-900 placeholder-blue-400"
-              placeholder="Search by patient, doctor, or field..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-          <select
-            className="bg-blue-50 text-blue-700 rounded-lg px-4 py-2 border border-blue-200 focus:ring-blue-500 focus:border-blue-500"
-            value={filter}
-            onChange={e => setFilter(e.target.value)}
+    <div className="w-full h-full flex flex-col">
+      <div className="p-6 bg-gradient-to-br from-blue-700 to-blue-900 flex flex-col flex-1">
+        <div className="flex justify-between items-center mb-6 mt-4">
+          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+            <FaHospitalUser className="inline-block text-blue-200 text-3xl drop-shadow" />
+            My Appointments
+          </h1>
+          <button 
+            onClick={() => {}}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 transition flex items-center gap-2 hover:scale-105 transform"
           >
-            {fields.map(f => (
-              <option key={f} value={f}>{f}</option>
-            ))}
-          </select>
-          {selected.length > 0 && (
-            <button
-              className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow flex items-center gap-2"
-              onClick={handleBulkCancel}
-            >
-              <XCircle className="w-5 h-5" /> Cancel Selected
-            </button>
-          )}
+            <FaPlus className="inline-block" />
+            <span>Book Appointment</span>
+          </button>
         </div>
-        {/* Appointments Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-blue-100">
-            <thead>
-              <tr>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider rounded-tl-lg">
-                  <input type="checkbox" checked={filtered.length > 0 && selected.length === filtered.length} onChange={handleSelectAll} />
-                </th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Patient</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Doctor</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Field</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Date</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Time</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider rounded-tr-lg">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-blue-50">
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="text-center py-8 text-blue-400">No appointments found.</td>
-                </tr>
-              ) : (
-                filtered.map((appt) => (
-                  <tr key={appt.id} className="hover:bg-blue-50 transition-colors">
-                    <td className="px-4 py-3 text-center">
-                      <input type="checkbox" checked={selected.includes(appt.id)} onChange={() => handleSelect(appt.id)} />
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-blue-900 font-medium flex items-center gap-2">
-                      <UserCircle className="w-5 h-5 text-blue-400" /> {appt.patient}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-blue-700 flex items-center gap-2">
-                      <Stethoscope className="w-5 h-5 text-blue-400" /> {appt.doctor}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-blue-700">{appt.field}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-blue-700">{new Date(appt.date).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-blue-700">{appt.time}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {appt.status === 'Scheduled' ? (
-                        <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">
-                          <CheckCircle2 className="w-4 h-4" /> Scheduled
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
-                          <CheckCircle2 className="w-4 h-4" /> Completed
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 flex gap-2">
-                      <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium">
-                        <Eye className="w-4 h-4" /> View
-                      </button>
-                      <button className="flex items-center gap-1 text-yellow-600 hover:text-yellow-800 font-medium">
-                        <RotateCcw className="w-4 h-4" /> Reschedule
-                      </button>
-                      <button className="flex items-center gap-1 text-red-600 hover:text-red-800 font-medium" onClick={() => handleCancel(appt.id)}>
-                        <XCircle className="w-4 h-4" /> Cancel
-                      </button>
-                    </td>
+
+        {/* Shifted Up: mb-8 mt-0 -> mb-6 mt-0 */}
+        <div className="relative rounded-lg shadow bg-black mb-6 mt-0 group">
+          <div className="absolute -top-2 -left-2 z-20 w-12 h-12 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="w-full h-full rounded-tl-2xl shadow-2xl shadow-blue-400/60" />
+          </div>
+          <div className="overflow-x-hidden">
+            <div
+              className="transition-all duration-500"
+              style={{
+                maxHeight,
+                minHeight: '0px'
+              }}
+              ref={containerRef}
+            >
+              <table className="min-w-full text-white">
+                <thead className="sticky top-0 bg-blue-800 z-10">
+                  <tr>
+                    <th className="py-3 px-4 text-left rounded-tl-lg w-16">
+                      <span className="flex items-center gap-2">
+                        <FaUser className="inline-block text-blue-300" />
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left">
+                      <span className="flex items-center gap-2">
+                        <FaCalendarAlt className="inline-block text-blue-300" />
+                        <span>Date</span>
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left">
+                      <span className="flex items-center gap-2">
+                        <FaClock className="inline-block text-blue-300" />
+                        <span>Time</span>
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left">
+                      <span className="flex items-center gap-2">
+                        <FaStethoscope className="inline-block text-blue-300" />
+                        <span>Doctor</span>
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left">
+                      <span className="flex items-center gap-2">
+                        <FaInfoCircle className="inline-block text-blue-300" />
+                        <span>Appointment Type</span>
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left">
+                      <span className="flex items-center gap-2">
+                        <FaInfoCircle className="inline-block text-blue-300" />
+                        <span>Notes</span>
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left rounded-tr-lg">
+                      <span className="flex items-center gap-2">
+                        <FaCheckCircle className="inline-block text-blue-300" />
+                        <span>Status</span>
+                      </span>
+                    </th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {appointments.slice(0, visibleCount).map((appointment, idx) => (
+                    <tr
+                      key={appointment.id}
+                      className={`border-b last:border-b-0 ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} hover:bg-gray-700 hover:scale-[1.01] transition-all duration-200 transform`}
+                    >
+                      <td className="py-3 px-4 text-center">
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                        <FaUser className="text-lg" />
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 font-medium">
+                      {new Date(appointment.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </td>
+                      <td className="py-3 px-4">{appointment.time}</td>
+                      <td className="py-3 px-4 font-medium">{appointment.doctor}</td>
+                      <td className="py-3 px-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getTypeBadge(appointment.type)}`}>
+                          {appointment.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-300">
+                        {appointment.notes || 'No additional notes'}
+                      </td>
+                      <td className="py-3 px-4">
+                        {appointment.status === 'pending' ? (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setAppointments(prev => prev.map(a => 
+                                  a.id === appointment.id ? { ...a, status: 'accepted' } : a
+                                ));
+                              }}
+                              className="px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 transition"
+                            >
+                              Accept
+                            </button>
+                            <button
+                              onClick={() => {
+                                setAppointments(prev => prev.map(a => 
+                                  a.id === appointment.id ? { ...a, status: 'declined' } : a
+                                ));
+                              }}
+                              className="px-3 py-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition"
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        ) : (
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadge(appointment.status)}`}>
+                            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {visibleCount === EXPANDED_VISIBLE && appointments.length > EXPANDED_VISIBLE &&
+                    appointments.slice(EXPANDED_VISIBLE, appointments.length).map((appointment, idx) => (
+                      <tr
+                        key={appointment.id}
+                        className={`border-b last:border-b-0 ${(EXPANDED_VISIBLE + idx) % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} hover:bg-gray-700 hover:scale-[1.01] transition-all duration-200 transform`}
+                      >
+                        <td className="py-3 px-4 font-medium">
+                          {new Date(appointment.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </td>
+                        <td className="py-3 px-4">{appointment.time}</td>
+                        <td className="py-3 px-4 font-medium">{appointment.doctor}</td>
+                        <td className="py-3 px-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getTypeBadge(appointment.type)}`}>
+                            {appointment.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-300">
+                          {appointment.notes || 'No additional notes'}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadge(appointment.status)}`}>
+                            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="flex justify-center p-4 bg-black">
+            {appointments.length > INITIAL_VISIBLE && (
+              visibleCount < EXPANDED_VISIBLE ? (
+                <button
+                  onClick={showMore}
+                  className="px-6 py-2 bg-blue-900 text-white rounded-lg shadow hover:bg-blue-800 transition"
+                >
+                  Show More
+                </button>
+              ) : (
+                <button
+                  onClick={showLess}
+                  className="px-6 py-2 bg-blue-300 text-blue-900 rounded-lg shadow hover:bg-blue-400 transition"
+                >
+                  Show Less
+                </button>
+              )
+            )}
+          </div>
+        </div>
+
+        <div className="mt-10 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Upcoming Appointments</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {appointments
+              .filter(a => a.status === 'pending' || a.status === 'accepted')
+              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+              .slice(0, 3)
+              .map(appointment => (
+                <div key={appointment.id} className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 hover:bg-opacity-20 transition-all duration-300">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-white">{appointment.title}</h3>
+                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(appointment.status)}`}>
+                      {appointment.status}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-300 mb-2">
+                    <div className="flex items-center gap-2">
+                      <FaStethoscope className="text-blue-300" />
+                      {appointment.doctor}
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <FaCalendarAlt className="text-blue-300" />
+                      {new Date(appointment.date).toLocaleDateString()} at {appointment.time}
+                    </div>
+                  </div>
+                  {appointment.notes && (
+                    <p className="text-xs text-gray-400 mt-2 line-clamp-2">
+                      {appointment.notes}
+                    </p>
+                  )}
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default AdminAppointments;
