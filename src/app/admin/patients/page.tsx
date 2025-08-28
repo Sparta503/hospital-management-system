@@ -1,9 +1,19 @@
 'use client';
 
-import React from 'react';
-import { UserCircle, Phone, Mail, CreditCard, DollarSign, CalendarDays } from 'lucide-react';
+import React, { useState } from 'react';
+import { UserCircle, Phone, Mail, DollarSign, CalendarDays, Search } from 'lucide-react';
 
-const patients = [
+interface Patient {
+  id: number;
+  name: string;
+  age: number;
+  contact: string;
+  email: string;
+  paymentType: 'Cash' | 'Monthly Subscription';
+  amount: number;
+}
+
+const patients: Patient[] = [
   { id: 1, name: 'Alice Smith', age: 29, contact: '+1234567890', email: 'alice@email.com', paymentType: 'Cash', amount: 200 },
   { id: 2, name: 'Bob Lee', age: 42, contact: '+1987654321', email: 'bob@email.com', paymentType: 'Monthly Subscription', amount: 150 },
   { id: 3, name: 'Clara Evans', age: 36, contact: '+1122334455', email: 'clara@email.com', paymentType: 'Cash', amount: 300 },
@@ -19,61 +29,161 @@ const patients = [
 const total = patients.reduce((sum, p) => sum + p.amount, 0);
 
 export default function AdminPatientsPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterPayment, setFilterPayment] = useState<'all' | Patient['paymentType']>('all');
+
+  const filteredPatients = patients.filter(patient => {
+    const matchesSearch = 
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.contact.includes(searchTerm);
+    
+    const matchesPayment = filterPayment === 'all' || patient.paymentType === filterPayment;
+    
+    return matchesSearch && matchesPayment;
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-200 to-indigo-100 py-12 px-2 sm:px-8 flex flex-col items-center">
-      <h1 className="text-3xl font-bold text-blue-900 mb-8 drop-shadow-xl flex items-center gap-3">
-        <UserCircle className="w-8 h-8 text-blue-600" />
-        Patients Management
-      </h1>
-      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-lg p-8">
-        {/* Total Payments */}
-        <div className="mb-6 flex items-center gap-4">
-          <DollarSign className="w-7 h-7 text-green-500" />
-          <span className="text-xl font-semibold text-green-700">Total Payments:</span>
-          <span className="text-2xl font-bold text-green-900">${total.toLocaleString()}</span>
+    <div className="w-full h-full flex flex-col">
+      <div className="p-6 bg-gradient-to-br from-blue-700 to-blue-900 flex flex-col flex-1">
+        <div className="flex justify-between items-center mb-6 mt-4">
+          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+            <UserCircle className="inline-block text-blue-200 text-3xl drop-shadow" />
+            Patients Management
+          </h1>
+          <div className="flex items-center gap-4">
+            <DollarSign className="w-6 h-6 text-green-300" />
+            <span className="text-lg font-semibold text-green-200">Total:</span>
+            <span className="text-xl font-bold text-white">${total.toLocaleString()}</span>
+          </div>
         </div>
-        {/* Patients Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-blue-100">
-            <thead>
-              <tr>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider rounded-tl-lg">Name</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Age</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Contact</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Email</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Payment Type</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Amount</th>
-                <th className="px-4 py-3 bg-blue-50 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider rounded-tr-lg">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-blue-50">
-              {patients.map((p) => (
-                <tr key={p.id} className="hover:bg-blue-50 transition-colors">
-                  <td className="px-4 py-3 whitespace-nowrap text-blue-900 font-medium flex items-center gap-2">
-                    <UserCircle className="w-5 h-5 text-blue-400" /> {p.name}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-blue-700">{p.age}</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-blue-700 flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-blue-400" /> {p.contact}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-blue-700 flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-blue-400" /> {p.email}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${p.paymentType === 'Cash' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>
-                      {p.paymentType === 'Cash' ? <DollarSign className="w-4 h-4" /> : <CreditCard className="w-4 h-4" />} {p.paymentType}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-green-700 font-semibold">${p.amount.toLocaleString()}</td>
-                  <td className="px-4 py-3 flex gap-2">
-                    <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium">
-                      <CalendarDays className="w-4 h-4" /> View Appointments
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        {/* Search and Filter Section */}
+        <div className="relative rounded-lg shadow bg-black mb-6 group">
+          <div className="absolute -top-2 -left-2 z-20 w-12 h-12 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="w-full h-full rounded-tl-2xl shadow-2xl shadow-blue-400/60" />
+          </div>
+          <div className="p-4 border-b border-gray-700">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="text-gray-400 w-4 h-4" />
+                </div>
+                <input
+                  type="text"
+                  className="block w-full pl-10 pr-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Search patients..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div>
+                <select
+                  className="block w-full pl-3 pr-10 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={filterPayment}
+                  onChange={(e) => setFilterPayment(e.target.value as 'all' | 'Cash' | 'Monthly Subscription')}
+                >
+                  <option value="all">All Payment Types</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Monthly Subscription">Monthly Subscription</option>
+                </select>
+              </div>
+              <div className="flex items-center justify-end">
+                <span className="text-sm text-gray-300">
+                  {filteredPatients.length} {filteredPatients.length === 1 ? 'patient' : 'patients'} found
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Patients Table */}
+          <div className="overflow-x-auto">
+            <div className="transition-all duration-500">
+              <table className="min-w-full text-white">
+                <thead className="sticky top-0 bg-blue-800 z-10">
+                  <tr>
+                    <th className="py-3 px-4 text-left rounded-tl-lg w-16">
+                      <span className="flex items-center gap-2">
+                        <UserCircle className="inline-block text-blue-300" />
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left">Patient</th>
+                    <th className="py-3 px-4 text-left">
+                      <span className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-blue-300" />
+                        <span>Contact</span>
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left">
+                      <span className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-blue-300" />
+                        <span>Email</span>
+                      </span>
+                    </th>
+                    <th className="py-3 px-4 text-left">Age</th>
+                    <th className="py-3 px-4 text-left">Payment</th>
+                    <th className="py-3 px-4 text-left rounded-tr-lg">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {filteredPatients.length > 0 ? (
+                    filteredPatients.map((patient) => (
+                      <tr 
+                        key={patient.id} 
+                        className="hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="py-3 px-4">
+                          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                            <UserCircle className="text-blue-200 w-5 h-5" />
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="font-medium">{patient.name}</div>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-300">
+                          {patient.contact}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-300 max-w-xs truncate">
+                          {patient.email}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-700">
+                            {patient.age} years
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex flex-col items-center gap-1">
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap w-fit ${
+                              patient.paymentType === 'Cash' 
+                                ? 'bg-yellow-100 text-yellow-800' 
+                                : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              {patient.paymentType === 'Cash' ? 'Cash' : 'Subscription'}
+                            </span>
+                            <div className="text-xs text-green-400 font-medium">
+                              ${patient.amount.toLocaleString()}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <button className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm">
+                            <CalendarDays className="w-4 h-4" />
+                            <span>View</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="py-6 text-center text-gray-400">
+                        No patients found matching your criteria
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
