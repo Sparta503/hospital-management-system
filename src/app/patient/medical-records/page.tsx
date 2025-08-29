@@ -214,12 +214,21 @@ export default function MedicalRecords() {
         </div>
       </div>
 
-      <div className="rounded-lg shadow bg-gray-900 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="relative rounded-lg shadow bg-black mb-6 mt-0 group">
+        <div className="absolute -top-2 -left-2 z-20 w-12 h-12 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-full h-full rounded-tl-2xl shadow-2xl shadow-blue-400/60" />
+        </div>
+        <div className="overflow-x-hidden">
+          <div className="transition-all duration-500" style={{ maxHeight: 'calc(100vh - 300px)' }}>
           <table className="min-w-full text-white">
-            <thead className="bg-blue-800">
+            <thead className="sticky top-0 bg-blue-800 z-10">
               <tr>
-                <th className="py-3 px-4 text-left rounded-tl-lg">
+                <th className="py-3 px-4 text-left rounded-tl-lg w-16">
+                  <span className="flex items-center gap-2">
+                    <FaFileAlt className="text-blue-300" />
+                  </span>
+                </th>
+                <th className="py-3 px-4 text-left">
                   <span className="flex items-center gap-2">
                     <FaFileAlt className="text-blue-300" />
                     <span>Record</span>
@@ -249,7 +258,7 @@ export default function MedicalRecords() {
                     <span>Status</span>
                   </span>
                 </th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="py-3 px-4 text-right rounded-tr-lg">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
@@ -257,25 +266,29 @@ export default function MedicalRecords() {
                 visibleRecords.map((record, idx) => (
                   <tr 
                     key={record.id}
-                    className={`hover:bg-gray-800 transition-colors ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-850'}`}
+                    className={`transition-all duration-200 transform hover:scale-[1.01] ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-850'} hover:bg-gray-700 hover:shadow-lg`}
                   >
                     <td className="py-4 px-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex justify-center">
                         <div className="p-2 rounded-lg bg-blue-900/30">
                           {getTypeIcon(record.type)}
                         </div>
-                        <div>
-                          <div className="font-medium">{getTypeLabel(record.type)}</div>
-                          <div className="text-sm text-gray-400">{record.specialty}</div>
-                        </div>
                       </div>
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="font-medium">{record.doctor}</div>
+                    <td className="py-4 px-4 group">
+                      <div className="flex flex-col">
+                        <div className="font-medium group-hover:text-blue-300 transition-colors duration-200">
+                          {getTypeLabel(record.type)}
+                        </div>
+                        <div className="text-sm text-gray-400">{record.specialty}</div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 group">
+                      <div className="font-medium group-hover:text-blue-300 transition-colors duration-200">{record.doctor}</div>
                       <div className="text-sm text-gray-400">{record.specialty}</div>
                     </td>
                     <td className="py-4 px-4 max-w-xs">
-                      <div className="line-clamp-2">{record.summary}</div>
+                      <div className="line-clamp-2 group-hover:text-blue-100 transition-colors duration-200">{record.summary}</div>
                     </td>
                     <td className="py-4 px-4 whitespace-nowrap">
                       {new Date(record.date).toLocaleDateString('en-US', {
@@ -284,7 +297,7 @@ export default function MedicalRecords() {
                         day: 'numeric',
                       })}
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-4 group">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(record.status)}`}>
                         {record.status.replace('_', ' ').split(' ').map(word => 
                           word.charAt(0).toUpperCase() + word.slice(1)
@@ -293,13 +306,13 @@ export default function MedicalRecords() {
                     </td>
                     <td className="py-4 px-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button className="p-2 text-blue-400 hover:text-blue-300 rounded-full hover:bg-blue-900/30 transition-colors">
+                        <button className="p-2 text-blue-400 hover:text-blue-300 rounded-full hover:bg-blue-900/30 transition-all duration-200 hover:scale-110 transform">
                           <FaFilePdf className="w-5 h-5" />
                         </button>
-                        <button className="p-2 text-green-400 hover:text-green-300 rounded-full hover:bg-green-900/30 transition-colors">
+                        <button className="p-2 text-green-400 hover:text-green-300 rounded-full hover:bg-green-900/30 transition-all duration-200 hover:scale-110 transform">
                           <FaDownload className="w-5 h-5" />
                         </button>
-                        <button className="p-2 text-purple-400 hover:text-purple-300 rounded-full hover:bg-purple-900/30 transition-colors">
+                        <button className="p-2 text-purple-400 hover:text-purple-300 rounded-full hover:bg-purple-900/30 transition-all duration-200 hover:scale-110 transform">
                           <FaShare className="w-5 h-5" />
                         </button>
                       </div>
@@ -315,6 +328,7 @@ export default function MedicalRecords() {
               )}
             </tbody>
           </table>
+        </div>
         </div>
         
         {filteredRecords.length > INITIAL_VISIBLE && (
