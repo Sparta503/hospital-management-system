@@ -131,10 +131,16 @@ const users: User[] = [
   }
 ];
 
+const INITIAL_VISIBLE = 5;
+
 const AdminUsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<'all' | User['role']>('all');
   const [filterPolicy, setFilterPolicy] = useState<'all' | User['policyType']>('all');
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
+  const showMore = () => setVisibleCount(filteredUsers.length);
+  const showLess = () => setVisibleCount(INITIAL_VISIBLE);
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
@@ -148,6 +154,8 @@ const AdminUsersPage = () => {
     
     return matchesSearch && matchesRole && matchesPolicy;
   });
+
+  const visibleUsers = filteredUsers.slice(0, visibleCount);
 
   const getRoleBadge = (role: User['role']) => {
     switch (role) {
@@ -258,49 +266,57 @@ const AdminUsersPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
-                  {filteredUsers.length > 0 ? (
-                    filteredUsers.map((user) => (
+                  {visibleUsers.length > 0 ? (
+                    visibleUsers.map((user) => (
                       <tr 
-                        key={user.id} 
-                        className="hover:bg-gray-800/50 transition-colors"
+                        key={user.id}
+                        className="transition-all duration-200 transform hover:scale-[1.01] bg-gray-900 hover:bg-gray-700 hover:shadow-lg group"
                       >
-                        <td className="py-3 px-4">
-                          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        <td className="py-4 px-4">
+                          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center group-hover:bg-blue-700 transition-colors duration-200">
                             {user.role === 'doctor' ? (
-                              <FaUserMd className="text-blue-200" />
+                              <FaUserMd className="text-blue-200 group-hover:scale-110 transition-transform duration-200" />
                             ) : user.role === 'admin' ? (
-                              <FaUser className="text-blue-200" />
+                              <FaUser className="text-blue-200 group-hover:scale-110 transition-transform duration-200" />
                             ) : (
-                              <FaUser className="text-blue-200" />
+                              <FaUser className="text-blue-200 group-hover:scale-110 transition-transform duration-200" />
                             )}
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="font-medium">{user.name}</div>
+                        <td className="py-4 px-4 group">
+                          <div className="font-medium group-hover:text-blue-300 transition-colors duration-200">
+                            {user.name}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300">
-                          {user.email}
+                        <td className="py-4 px-4 group">
+                          <div className="text-gray-300 group-hover:text-blue-100 transition-colors duration-200">
+                            {user.email}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300">
-                          {user.phone}
+                        <td className="py-4 px-4 group">
+                          <div className="text-gray-300 group-hover:text-blue-100 transition-colors duration-200">
+                            {user.phone}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300 max-w-xs truncate">
-                          {user.address}
+                        <td className="py-4 px-4 group">
+                          <div className="text-gray-300 group-hover:text-blue-100 transition-colors duration-200 truncate max-w-xs">
+                            {user.address}
+                          </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadge(user.role)}`}>
+                        <td className="py-4 px-4">
+                          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getRoleBadge(user.role)} group-hover:opacity-90 transition-opacity duration-200`}>
                             {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                           </span>
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="flex flex-col items-center gap-1">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${getPolicyBadge(user.policyType)}`}>
+                        <td className="py-4 px-4">
+                          <div className="flex flex-col items-start gap-1">
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${getPolicyBadge(user.policyType)} group-hover:opacity-90 transition-opacity duration-200`}>
                               {user.policyType === 'medical_aid' ? 'Medical Aid' : 'Cash'}
                             </span>
                             {user.policyType === 'medical_aid' && user.medicalAidProvider && (
-                              <div className="text-xs text-gray-400 flex items-center">
+                              <div className="text-xs text-gray-400 flex items-center group-hover:text-blue-100 transition-colors duration-200">
                                 <FaIdCard className="mr-1 text-blue-300" />
-                                <span className="max-w-[100px] truncate" title={user.medicalAidProvider}>
+                                <span className="max-w-[120px] truncate" title={user.medicalAidProvider}>
                                   {user.medicalAidProvider}
                                 </span>
                               </div>
@@ -318,6 +334,21 @@ const AdminUsersPage = () => {
                   )}
                 </tbody>
               </table>
+              
+              {filteredUsers.length > INITIAL_VISIBLE && (
+                <div className="flex justify-center p-4 bg-gray-800 border-t border-gray-700">
+                  <button
+                    onClick={visibleCount < filteredUsers.length ? showMore : showLess}
+                    className={`px-6 py-2 rounded-lg shadow transition ${
+                      visibleCount < filteredUsers.length 
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                    }`}
+                  >
+                    {visibleCount < filteredUsers.length ? 'Show More' : 'Show Less'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
