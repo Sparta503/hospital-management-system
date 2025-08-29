@@ -257,12 +257,16 @@ export default function MedicalRecords() {
                 visibleRecords.map((record, idx) => (
                   <tr 
                     key={record.id}
-                    className={`hover:bg-gray-800 transition-colors ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-850'}`}
+                    className={`transition-all duration-200 transform hover:scale-[1.01] ${
+                      idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-850'
+                    } hover:bg-gray-700 hover:shadow-lg`}
                   >
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-blue-900/30">
-                          {getTypeIcon(record.type)}
+                        <div className="p-2 rounded-lg bg-blue-900/30 group-hover:bg-blue-800/50 transition-colors duration-200">
+                          {React.cloneElement(getTypeIcon(record.type), {
+                            className: `${getTypeIcon(record.type).props.className} group-hover:scale-110 transition-transform duration-200`
+                          })}
                         </div>
                         <div>
                           <div className="font-medium">{getTypeLabel(record.type)}</div>
@@ -270,19 +274,23 @@ export default function MedicalRecords() {
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="font-medium">{record.doctor}</div>
-                      <div className="text-sm text-gray-400">{record.specialty}</div>
+                    <td className="py-4 px-4 group">
+                      <div className="font-medium group-hover:text-blue-300 transition-colors duration-200">{record.doctor}</div>
+                      <div className="text-sm text-gray-400 group-hover:text-blue-100 transition-colors duration-200">{record.specialty}</div>
                     </td>
-                    <td className="py-4 px-4 max-w-xs">
-                      <div className="line-clamp-2">{record.summary}</div>
+                    <td className="py-4 px-4 max-w-xs group">
+                      <div className="line-clamp-2 group-hover:text-blue-100 transition-colors duration-200">
+                        {record.summary}
+                      </div>
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      {new Date(record.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
+                    <td className="py-4 px-4 whitespace-nowrap group">
+                      <span className="group-hover:text-blue-100 transition-colors duration-200">
+                        {new Date(record.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
                     </td>
                     <td className="py-4 px-4">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(record.status)}`}>
@@ -292,15 +300,15 @@ export default function MedicalRecords() {
                       </span>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button className="p-2 text-blue-400 hover:text-blue-300 rounded-full hover:bg-blue-900/30 transition-colors">
-                          <FaFilePdf className="w-5 h-5" />
+                      <div className="flex justify-end gap-1">
+                        <button className="p-1.5 text-blue-400 hover:text-blue-300 rounded-full hover:bg-blue-900/30 transition-all duration-200 hover:scale-110 transform">
+                          <FaFilePdf className="w-4 h-4" />
                         </button>
-                        <button className="p-2 text-green-400 hover:text-green-300 rounded-full hover:bg-green-900/30 transition-colors">
-                          <FaDownload className="w-5 h-5" />
+                        <button className="p-1.5 text-green-400 hover:text-green-300 rounded-full hover:bg-green-900/30 transition-all duration-200 hover:scale-110 transform">
+                          <FaDownload className="w-4 h-4" />
                         </button>
-                        <button className="p-2 text-purple-400 hover:text-purple-300 rounded-full hover:bg-purple-900/30 transition-colors">
-                          <FaShare className="w-5 h-5" />
+                        <button className="p-1.5 text-purple-400 hover:text-purple-300 rounded-full hover:bg-purple-900/30 transition-all duration-200 hover:scale-110 transform">
+                          <FaShare className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
