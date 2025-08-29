@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { FaUser, FaCalendarAlt, FaClock, FaStethoscope, FaInfoCircle, FaCheckCircle, FaPlus, FaHospitalUser } from 'react-icons/fa';
+import AppointmentTrend from './graphs/update';
+import ThreeDPieChart from './graphs/data';
 
 interface Appointment {
   id: number;
@@ -190,7 +192,7 @@ const DoctorAppointments: React.FC = () => {
   return (
     <div className="w-full h-full flex flex-col">
       <div className="p-6 bg-gradient-to-br from-blue-700 to-blue-900 flex flex-col flex-1">
-        <div className="flex justify-between items-center mb-6 mt-4">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <FaHospitalUser className="inline-block text-blue-200 text-3xl drop-shadow" />
             My Appointments
@@ -379,38 +381,20 @@ const DoctorAppointments: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-10 mb-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Upcoming Appointments</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {appointments
-              .filter(a => a.status === 'pending' || a.status === 'accepted')
-              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-              .slice(0, 3)
-              .map(appointment => (
-                <div key={appointment.id} className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 hover:bg-opacity-20 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-white">{appointment.title}</h3>
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(appointment.status)}`}>
-                      {appointment.status}
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-300 mb-2">
-                    <div className="flex items-center gap-2">
-                      <FaStethoscope className="text-blue-300" />
-                      {appointment.doctor}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <FaCalendarAlt className="text-blue-300" />
-                      {new Date(appointment.date).toLocaleDateString()} at {appointment.time}
-                    </div>
-                  </div>
-                  {appointment.notes && (
-                    <p className="text-xs text-gray-400 mt-2 line-clamp-2">
-                      {appointment.notes}
-                    </p>
-                  )}
-                </div>
-              ))}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-6 rounded-xl shadow-xl">
+            <h3 className="text-xl font-semibold mb-4 text-white">Appointments Overview</h3>
+            <AppointmentTrend />
+          </div>
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-6 rounded-xl shadow-xl">
+            <h3 className="text-xl font-semibold  text-white">Appointment Types</h3>
+            <div className="h-64">
+              <ThreeDPieChart 
+                labels={['Checkup', 'Follow-up', 'Consultation', 'Procedure']}
+                data={[35, 25, 25, 15]}
+                colors={['#6366F1', '#F59E0B', '#3B82F6', '#EC4899']}
+              />
+            </div>
           </div>
         </div>
       </div>
