@@ -28,9 +28,15 @@ const patients: Patient[] = [
 
 const total = patients.reduce((sum, p) => sum + p.amount, 0);
 
+const INITIAL_VISIBLE = 5;
+
 export default function AdminPatientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPayment, setFilterPayment] = useState<'all' | Patient['paymentType']>('all');
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
+  const showMore = () => setVisibleCount(filteredPatients.length);
+  const showLess = () => setVisibleCount(INITIAL_VISIBLE);
 
   const filteredPatients = patients.filter(patient => {
     const matchesSearch = 
@@ -42,6 +48,8 @@ export default function AdminPatientsPage() {
     
     return matchesSearch && matchesPayment;
   });
+
+  const visiblePatients = filteredPatients.slice(0, visibleCount);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -126,50 +134,58 @@ export default function AdminPatientsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
-                  {filteredPatients.length > 0 ? (
-                    filteredPatients.map((patient) => (
+                  {visiblePatients.length > 0 ? (
+                    visiblePatients.map((patient) => (
                       <tr 
-                        key={patient.id} 
-                        className="hover:bg-gray-800/50 transition-colors"
+                        key={patient.id}
+                        className="transition-all duration-200 transform hover:scale-[1.01] bg-gray-900 hover:bg-gray-700 hover:shadow-lg"
                       >
-                        <td className="py-3 px-4">
-                          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                            <UserCircle className="text-blue-200 w-5 h-5" />
+                        <td className="py-4 px-4">
+                          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center group-hover:bg-blue-700 transition-colors duration-200">
+                            <UserCircle className="text-blue-200 w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="font-medium">{patient.name}</div>
+                        <td className="py-4 px-4 group">
+                          <div className="font-medium group-hover:text-blue-300 transition-colors duration-200">
+                            {patient.name}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300">
-                          {patient.contact}
+                        <td className="py-4 px-4 group">
+                          <div className="text-gray-300 group-hover:text-blue-100 transition-colors duration-200">
+                            {patient.contact}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300 max-w-xs truncate">
-                          {patient.email}
+                        <td className="py-4 px-4 group">
+                          <div className="text-gray-300 group-hover:text-blue-100 transition-colors duration-200 truncate max-w-xs">
+                            {patient.email}
+                          </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-700">
+                        <td className="py-4 px-4">
+                          <span className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-700 group-hover:bg-gray-600 transition-colors duration-200">
                             {patient.age} years
                           </span>
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="flex flex-col items-center gap-1">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap w-fit ${
+                        <td className="py-4 px-4">
+                          <div className="flex flex-col items-start gap-1">
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
                               patient.paymentType === 'Cash' 
                                 ? 'bg-yellow-100 text-yellow-800' 
                                 : 'bg-blue-100 text-blue-800'
-                            }`}>
+                            } group-hover:opacity-90 transition-opacity duration-200`}>
                               {patient.paymentType === 'Cash' ? 'Cash' : 'Subscription'}
                             </span>
-                            <div className="text-xs text-green-400 font-medium">
+                            <div className="text-sm text-green-400 font-medium">
                               ${patient.amount.toLocaleString()}
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <button className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm">
-                            <CalendarDays className="w-4 h-4" />
-                            <span>View</span>
-                          </button>
+                        <td className="py-4 px-4">
+                          <div className="flex justify-end">
+                            <button className="flex items-center gap-1.5 text-blue-400 hover:text-blue-300 text-sm group-hover:bg-blue-900/20 px-3 py-1.5 rounded-lg transition-all duration-200 hover:scale-105">
+                              <CalendarDays className="w-4 h-4" />
+                              <span>View</span>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -182,6 +198,21 @@ export default function AdminPatientsPage() {
                   )}
                 </tbody>
               </table>
+              
+              {filteredPatients.length > INITIAL_VISIBLE && (
+                <div className="flex justify-center p-4 bg-gray-800 border-t border-gray-700">
+                  <button
+                    onClick={visibleCount < filteredPatients.length ? showMore : showLess}
+                    className={`px-6 py-2 rounded-lg shadow transition ${
+                      visibleCount < filteredPatients.length 
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                    }`}
+                  >
+                    {visibleCount < filteredPatients.length ? 'Show More' : 'Show Less'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
