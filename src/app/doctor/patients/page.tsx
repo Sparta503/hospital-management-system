@@ -28,9 +28,15 @@ const patients: Patient[] = [
 
 const total = patients.reduce((sum, p) => sum + p.amount, 0);
 
+const INITIAL_VISIBLE = 5;
+
 export default function AdminPatientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPayment, setFilterPayment] = useState<'all' | Patient['paymentType']>('all');
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
+  const showMore = () => setVisibleCount(filteredPatients.length);
+  const showLess = () => setVisibleCount(INITIAL_VISIBLE);
 
   const filteredPatients = patients.filter(patient => {
     const matchesSearch = 
@@ -42,6 +48,8 @@ export default function AdminPatientsPage() {
     
     return matchesSearch && matchesPayment;
   });
+
+  const visiblePatients = filteredPatients.slice(0, visibleCount);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -98,78 +106,88 @@ export default function AdminPatientsPage() {
 
           {/* Patients Table */}
           <div className="overflow-x-auto">
-            <div className="transition-all duration-500">
-              <table className="min-w-full text-white">
+            <div className="transition-all duration-500 w-full">
+              <table className="w-full text-white">
                 <thead className="sticky top-0 bg-blue-800 z-10">
                   <tr>
-                    <th className="py-3 px-4 text-left rounded-tl-lg w-16">
-                      <span className="flex items-center gap-2">
-                        <UserCircle className="inline-block text-blue-300" />
-                      </span>
+                    <th className="py-3 px-4 text-left rounded-tl-lg">
+                      <UserCircle className="w-5 h-5 text-blue-300" />
                     </th>
-                    <th className="py-3 px-4 text-left">Patient</th>
-                    <th className="py-3 px-4 text-left">
-                      <span className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-blue-300" />
-                        <span>Contact</span>
-                      </span>
+                    <th className="py-3 px-4 text-left min-w-[140px]">
+                      <span className="whitespace-nowrap text-base">Patient</span>
                     </th>
                     <th className="py-3 px-4 text-left">
-                      <span className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-blue-300" />
-                        <span>Email</span>
-                      </span>
+                      <div className="flex items-center gap-2 whitespace-nowrap">
+                        <Phone className="w-4 h-4 text-blue-300 flex-shrink-0" />
+                        <span className="text-base">Contact</span>
+                      </div>
                     </th>
-                    <th className="py-3 px-4 text-left">Age</th>
-                    <th className="py-3 px-4 text-left">Payment</th>
-                    <th className="py-3 px-4 text-left rounded-tr-lg">Actions</th>
+                    <th className="py-3 px-4 text-left min-w-[180px]">
+                      <div className="flex items-center gap-2 whitespace-nowrap">
+                        <Mail className="w-4 h-4 text-blue-300 flex-shrink-0" />
+                        <span className="text-base">Email</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-4 text-center whitespace-nowrap text-base">Age</th>
+                    <th className="py-3 px-4 text-left whitespace-nowrap text-base">Payment</th>
+                    <th className="py-3 px-4 text-right rounded-tr-lg text-base">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
-                  {filteredPatients.length > 0 ? (
-                    filteredPatients.map((patient) => (
+                  {visiblePatients.length > 0 ? (
+                    visiblePatients.map((patient) => (
                       <tr 
-                        key={patient.id} 
-                        className="hover:bg-gray-800/50 transition-colors"
+                        key={patient.id}
+                        className="transition-all duration-200 transform hover:scale-[1.01] bg-gray-900 hover:bg-gray-700 hover:shadow-lg"
                       >
-                        <td className="py-3 px-4">
-                          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                            <UserCircle className="text-blue-200 w-5 h-5" />
+                        <td className="py-4 px-4">
+                          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                            <UserCircle className="text-blue-200 w-4 h-4" />
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="font-medium">{patient.name}</div>
+                        <td className="py-4 px-4 min-w-[140px]">
+                          <div className="font-medium text-base group-hover:text-blue-300 transition-colors duration-200 truncate">
+                            {patient.name}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300">
-                          {patient.contact}
+                        <td className="py-4 px-4 group">
+                          <div className="text-gray-300 group-hover:text-blue-100 transition-colors duration-200 truncate">
+                            {patient.contact}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-300 max-w-xs truncate">
-                          {patient.email}
+                        <td className="py-4 px-4 min-w-[180px] group">
+                          <div className="text-gray-300 group-hover:text-blue-100 transition-colors duration-200 truncate">
+                            {patient.email}
+                          </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-700">
-                            {patient.age} years
+                        <td className="py-4 px-4 text-center">
+                          <span className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-700">
+                            {patient.age}
                           </span>
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="flex flex-col items-center gap-1">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap w-fit ${
+                        <td className="py-4 px-4">
+                          <div className="flex flex-col items-start gap-1">
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
                               patient.paymentType === 'Cash' 
                                 ? 'bg-yellow-100 text-yellow-800' 
                                 : 'bg-blue-100 text-blue-800'
                             }`}>
                               {patient.paymentType === 'Cash' ? 'Cash' : 'Subscription'}
                             </span>
-                            <div className="text-xs text-green-400 font-medium">
+                            <div className="text-sm text-green-400 font-medium">
                               ${patient.amount.toLocaleString()}
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <button className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm">
-                            <CalendarDays className="w-4 h-4" />
-                            <span>View</span>
-                          </button>
+                        <td className="py-4 px-4">
+                          <div className="flex justify-end gap-2">
+                            <button className="p-1.5 text-blue-400 hover:text-blue-300 rounded-full hover:bg-blue-900/30 transition-all duration-200 hover:scale-110 transform">
+                              <CalendarDays className="w-5 h-5" />
+                            </button>
+                            <button className="p-1.5 text-green-400 hover:text-green-300 rounded-full hover:bg-green-900/30 transition-all duration-200 hover:scale-110 transform">
+                              <Mail className="w-5 h-5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -182,6 +200,21 @@ export default function AdminPatientsPage() {
                   )}
                 </tbody>
               </table>
+              
+              {filteredPatients.length > INITIAL_VISIBLE && (
+                <div className="flex justify-center p-4 bg-gray-800 border-t border-gray-700">
+                  <button
+                    onClick={visibleCount < filteredPatients.length ? showMore : showLess}
+                    className={`px-6 py-2 rounded-lg shadow transition ${
+                      visibleCount < filteredPatients.length 
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                    }`}
+                  >
+                    {visibleCount < filteredPatients.length ? 'Show More' : 'Show Less'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
