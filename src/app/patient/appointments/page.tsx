@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { FaUser, FaCalendarAlt, FaClock, FaStethoscope, FaInfoCircle, FaCheckCircle, FaPlus, FaHospitalUser } from 'react-icons/fa';
+import TrendGraph from './graphs/data';
+import BarChart from './graphs/updates';
 
 interface Appointment {
   id: number;
@@ -352,42 +354,26 @@ const PatientAppointments: React.FC = () => {
             )}
           </div>
         </div>
-
-        <div className="mt-10 mb-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Upcoming Appointments</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {appointments
-              .filter(a => a.status === 'scheduled')
-              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-              .slice(0, 3)
-              .map(appointment => (
-                <div key={appointment.id} className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 hover:bg-opacity-20 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-white">{appointment.title}</h3>
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(appointment.status)}`}>
-                      {appointment.status}
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-300 mb-2">
-                    <div className="flex items-center gap-2">
-                      <FaStethoscope className="text-blue-300" />
-                      {appointment.doctor}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <FaCalendarAlt className="text-blue-300" />
-                      {new Date(appointment.date).toLocaleDateString()} at {appointment.time}
-                    </div>
-                  </div>
-                  {appointment.notes && (
-                    <p className="text-xs text-gray-400 mt-2 line-clamp-2">
-                      {appointment.notes}
-                    </p>
-                  )}
-                </div>
-              ))}
+        
+        {/* Graphs Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Left Graph - Appointment Trends */}
+          <div className="w-full">
+            <h2 className="text-lg font-semibold text-white mb-4">Appointment Trends</h2>
+            <div className="h-80">
+              <TrendGraph />
+            </div>
+          </div>
+          
+          {/* Right Graph - Appointment Updates */}
+          <div className="w-full mt-20">
+            <div className="h-full">
+              <BarChart />
+            </div>
           </div>
         </div>
-      </div>
+        
+        </div>
     </div>
   );
 };
