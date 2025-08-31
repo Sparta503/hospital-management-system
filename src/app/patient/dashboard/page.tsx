@@ -139,7 +139,7 @@ export default function PatientDashboard() {
 
   return (
     <div className="min-h-screen w-full bg-blue-500">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto pl-4 pr-0 py-8">
         <SearchBar />
         <div className="mb-8 mt-6">
           <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
@@ -163,20 +163,20 @@ export default function PatientDashboard() {
         </div>
         <DashboardCards />
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-1">
+        <div className="flex flex-col md:flex-row gap-8 mt-8 mb-8 justify-center items-stretch flex-wrap">
+          <div className="flex-1 min-w-[300px] max-w-md" style={{ transform: 'translateX(-300px)' }}>
             <AppointmentTypesChart />
           </div>
-          <div className="lg:col-span-1">
+          <div className="flex-1 min-w-[300px] max-w-md">
             <HealthStatusChart />
           </div>
-          <div className="lg:col-span-1">
+          <div className="flex-1 min-w-[300px] max-w-md" style={{ transform: 'translateX(300px)' }}>
             <WeeklyActivityChart />
           </div>
         </div>
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 -ml-8">
             <AppointmentsSection />
             <RecentRecords />
           </div>
