@@ -93,11 +93,24 @@ const options = {
 };
 
 const RolePieChart: React.FC = () => (
-  <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-xl mx-auto">
-    <h2 className="text-xl font-bold mb-4 text-blue-700">User Roles Distribution</h2>
+  <div className="bg-gradient-to-br from-blue-500/10 via-blue-600/10 to-blue-800/10 backdrop-blur-sm rounded-2xl shadow-lg p-6 w-full max-w-xl mx-auto border border-blue-400/20">
+    <h2 className="text-xl font-bold mb-4 text-blue-200">User Roles Distribution</h2>
     <div className="flex justify-center">
       {typeof window !== 'undefined' && (
-        <Chart options={options} series={roleData} type="donut" width={400} />
+        <Chart 
+          options={{
+            ...options,
+            chart: {
+              ...options.chart,
+              background: 'transparent',
+              foreColor: '#e2e8f0'
+            },
+            theme: { mode: 'dark' as const }
+          }} 
+          series={roleData} 
+          type="donut" 
+          width={400} 
+        />
       )}
     </div>
   </div>
