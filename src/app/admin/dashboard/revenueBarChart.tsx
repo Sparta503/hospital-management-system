@@ -106,8 +106,8 @@ const RevenueBarChart = () => {
   }), []);
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center w-full max-w-[520px] mx-auto">
-      <div className="font-semibold text-blue-700 text-sm mb-2">Revenue by Source</div>
+    <div className="bg-gradient-to-br from-blue-500/10 via-blue-600/10 to-blue-800/10 backdrop-blur-sm rounded-2xl shadow-lg p-6 w-full max-w-[520px] mx-auto border border-blue-400/20">
+      <div className="font-semibold text-blue-200 text-sm mb-2">Revenue by Source</div>
       {/* SVG filter for glowing shadow */}
       <svg width="0" height="0">
         <defs>
@@ -121,12 +121,14 @@ const RevenueBarChart = () => {
           </filter>
         </defs>
       </svg>
-      <div style={{ width: 480, height: 380, position: 'relative' }}>
+      <div style={{ width: '100%', height: 380, position: 'relative' }}>
         <ReactApexChart 
           options={{
             ...options,
             chart: {
               ...options.chart,
+              background: 'transparent',
+              foreColor: '#e2e8f0',
               dropShadow: {
                 enabled: true,
                 top: 0,
@@ -136,19 +138,32 @@ const RevenueBarChart = () => {
                 opacity: 0.28,
               },
             },
-            plotOptions: {
-              ...options.plotOptions,
-              bar: {
-                ...options.plotOptions.bar,
-                borderRadius: 12,
-                barHeight: '80%',
+            xaxis: {
+              ...options.xaxis,
+              labels: {
+                ...options.xaxis.labels,
+                style: {
+                  ...options.xaxis.labels.style,
+                  colors: '#e2e8f0',
+                },
               },
             },
+            yaxis: {
+              ...options.yaxis,
+              labels: {
+                ...options.yaxis.labels,
+                style: {
+                  ...options.yaxis.labels.style,
+                  colors: '#e2e8f0',
+                },
+              },
+            },
+            theme: { mode: 'dark' as const }
           }}
           series={series}
           type="bar"
           height={380}
-          width={480}
+          width="100%"
         />
       </div>
     </div>
