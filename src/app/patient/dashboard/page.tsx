@@ -2,36 +2,25 @@
 
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Box, Container, Typography } from '@mui/material';
 import SearchBar from '@/components/SearchBar';
-import AppointmentsSection from './AppointmentsSection';
-import QuickActions from './QuickActions';
-import RecentRecords from './RecentRecords';
-import dynamic from 'next/dynamic';
-
-// Dynamically import charts to avoid SSR issues
-const AppointmentTypesChart = dynamic(
-  () => import('./charts/AppointmentTypesChart'), 
-  { ssr: false }
-);
-
-const HealthStatusChart = dynamic(
-  () => import('./charts/HealthStatusChart'), 
-  { ssr: false }
-);
-
-const WeeklyActivityChart = dynamic(
-  () => import('./charts/WeeklyActivityChart'), 
-  { ssr: false }
-);
-
 import { 
   TrendingUp as TrendingUpIcon,
   People as PeopleIcon,
   ShoppingCart as ShoppingCartIcon,
   MonetizationOn as MonetizationOnIcon,
-  Dashboard as DashboardIcon
+  Dashboard as DashboardIcon,
+
+
+
 } from '@mui/icons-material';
+import React from 'react';
+import RolePieChart from './roleChart';
+import ResourceAllocationChart from './resourceAllocationChart';
+import RevenueBarChart from './revenueBarChart';
+import RecentQueries from './recentQueries';
+import QuickActions from './QuickActions';
 
 interface StatsCardProps {
   title: string;
@@ -122,69 +111,77 @@ const DashboardCards: React.FC = () => {
 export default function PatientDashboard() {
   const { user } = useAuth();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login');
-    } else if (user.role !== 'patient') {
-      router.push(`/${user.role}/dashboard`);
-    }
+    setIsMounted(true);
+    if (!user) router.push('/login');
+    else if (user.role !== 'patient') router.push(`/${user.role}/dashboard`);
   }, [user, router]);
 
-  if (!user || user.role !== 'patient') {
-    return <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-    </div>;
+  if (!isMounted || !user || user.role !== 'patient') {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
   }
 
   return (
     <div className="min-h-screen w-full bg-blue-500">
-      <div className="container mx-auto pl-4 pr-0 py-8">
+      <Container
+        maxWidth={false}
+        sx={{
+          p: 3,
+          m: 0,
+          width: 'calc(100% - 80px)',
+          maxWidth: '100% !important',
+          ml: '0px',
+          mr: '16px',
+        }}
+      >
+        {/* Shared Search Bar */}
         <SearchBar />
+        {/* Welcome Message */}
         <div className="mb-8 mt-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
-            <span className="inline-block rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-700 p-1 shadow-lg transition-transform duration-300 hover:scale-110 hover:shadow-blue-300/80 animate-blink group relative">
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-  </svg>
-  <style jsx>{`
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      45% { opacity: 1; }
-      50% { opacity: 0.2; }
-      55% { opacity: 1; }
-    }
-    .animate-blink { animation: blink 2s infinite; }
-  `}</style>
-</span>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">
             Welcome back, {user.name}!
           </h1>
-          <p className="text-white">Here&apos;s what&apos;s happening with your health today</p>
+          <p className="text-blue-100">Here&apos;s what&apos;s happening with your account today.</p>
         </div>
+        
+        {/* Dashboard Cards */}
         <DashboardCards />
+
         {/* Charts Section */}
-        <div className="flex flex-col md:flex-row gap-8 mt-8 mb-8 justify-center items-stretch flex-wrap">
-          <div className="flex-1 min-w-[300px] max-w-md" style={{ transform: 'translateX(-300px)' }}>
-            <AppointmentTypesChart />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8 mb-8">
+          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+            <h3 className="text-lg font-semibold text-white mb-4">Staff Distribution</h3>
+            <RolePieChart />
           </div>
-          <div className="flex-1 min-w-[300px] max-w-md">
-            <HealthStatusChart />
+          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+            <h3 className="text-lg font-semibold text-white mb-4">Resource Allocation</h3>
+            <ResourceAllocationChart />
           </div>
-          <div className="flex-1 min-w-[300px] max-w-md" style={{ transform: 'translateX(300px)' }}>
-            <WeeklyActivityChart />
+          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+            <h3 className="text-lg font-semibold text-white mb-4">Revenue Overview</h3>
+            <RevenueBarChart />
           </div>
         </div>
+
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2 space-y-6 -ml-8">
-            <AppointmentsSection />
-            <RecentRecords />
+          <div className="lg:col-span-2">
+            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+              <h3 className="text-lg font-semibold text-white mb-4">Recent Activities</h3>
+              <RecentQueries />
+            </div>
           </div>
-          <div className="lg:col-span-1">
+          <div>
             <QuickActions />
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }
