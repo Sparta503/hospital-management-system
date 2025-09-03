@@ -21,39 +21,41 @@ const RecentQueries: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+    <div className="bg-gradient-to-br from-blue-500/10 via-blue-600/10 to-blue-800/10 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-blue-400/20">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-black">Recent Queries</h2>
-        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+        <h2 className="text-xl font-semibold text-blue-200">Recent Queries</h2>
+        <button className="text-blue-300 hover:text-blue-100 text-sm font-medium transition-colors">
           View All
         </button>
       </div>
       {queries.length > 0 ? (
         <div className="space-y-4">
           {queries.map((query) => (
-            <div key={query.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <div key={query.id} className="bg-black/40 border border-blue-400/20 rounded-xl p-4 hover:bg-black/60 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-0.5 hover:border-blue-300/40 cursor-pointer group">
               <div className="flex items-start">
-                <div className="bg-blue-100 p-2 rounded-lg mr-4">
-                  <MessageCircle className="w-5 h-5 text-blue-600" />
+                <div className="bg-blue-500/30 p-2 rounded-lg mr-4 backdrop-blur-sm group-hover:bg-blue-500/40 transition-colors duration-300">
+                  <MessageCircle className="w-5 h-5 text-blue-300" />
                 </div>
                 <div className="flex-1">
                   <div className="flex flex-wrap gap-2 items-center mb-1">
-                    <span className="font-medium text-black">{query.name}</span>
-                    <span className="inline-flex items-center text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
-                      <User className="w-3 h-3 mr-1" />{query.role}
+                    <span className="font-medium text-white">{query.name}</span>
+                    <span className="inline-flex items-center text-xs bg-blue-500/40 text-blue-100 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                      <User className="w-3 h-3 mr-1 text-blue-200" />{query.role}
                     </span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ml-2 font-semibold ${query.status === 'Open' ? 'bg-green-100 text-green-700' : query.status === 'Closed' ? 'bg-gray-200 text-gray-600' : 'bg-yellow-100 text-yellow-700'}`}>{query.status}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ml-2 font-semibold ${query.status === 'Open' ? 'bg-green-500/20 text-green-200' : query.status === 'Closed' ? 'bg-gray-500/20 text-gray-300' : 'bg-yellow-500/20 text-yellow-200'}`}>{query.status}</span>
                   </div>
-                  <div className="text-sm text-gray-700 mb-1">{query.subject}</div>
-                  <div className="text-xs text-gray-500">{new Date(query.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+                  <div className="text-sm text-blue-50 mb-1">{query.subject}</div>
+                  <div className="text-xs text-blue-200">{new Date(query.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
                 </div>
-                <button className="text-blue-600 hover:text-blue-800 text-sm font-medium ml-4">Details</button>
+                <button className="text-blue-300 hover:text-blue-100 text-sm font-medium ml-4 transition-colors group-hover:scale-110 transform transition-transform duration-200">
+                  <span className="group-hover:underline">Details</span> →
+                </button>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-blue-300">
           <p>No recent queries</p>
         </div>
       )}
