@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 const HealthStatusChart = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const series = [70, 20, 7, 3];
 
   const chartOptions = {
