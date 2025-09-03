@@ -1,22 +1,24 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import SearchBar from '@/components/SearchBar'
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import GroupIcon from '@mui/icons-material/Group';
-import AssignmentIcon from '@mui/icons-material/Assignment';
+import { Box, Typography, Container } from '@mui/material';
+import SearchBar from '@/components/SearchBar';
+import { 
+  TrendingUp as TrendingUpIcon,
+  People as PeopleIcon,
+  EventNote as EventNoteIcon,
+  Assignment as AssignmentIcon,
+  Message as MessageIcon,
+} from '@mui/icons-material';
+import React from 'react';
+import RolePieChart from './roleChart';
+import ResourceAllocationChart from './resourceAllocationChart';
+import RevenueBarChart from './revenueBarChart';
+import RecentQueries from './recentQueries';
+import QuickActions from './QuickActions';
 
-import MessageIcon from '@mui/icons-material/Message';
-import { TrendingUp as TrendingUpIcon } from '@mui/icons-material';
-import NewAppointmentButton from './NewApointmentButton';
-import UpcomingAppointments from './UpcomingAppointments';
-import RecentAppointments from './RecentAppointments';
-import ViewTaskButton from './ViewTask';
-import MessagesButton from './messages';
-import SmallBarChart from './barchart';
 
 interface StatsCardProps {
   title: string;
@@ -56,7 +58,53 @@ const StatsCard: React.FC<StatsCardProps> = ({
   );
 };
 
+const DashboardCards: React.FC = () => {
+  const stats = [
+    {
+      title: 'Appointments Today',
+      value: '12',
+      icon: <EventNoteIcon fontSize="small" />,
+      change: '2 scheduled',
+      iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800'
+    },
+    {
+      title: 'Total Patients',
+      value: '84',
+      icon: <PeopleIcon fontSize="small" />,
+      change: '3 new',
+      iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800'
+    },
+    {
+      title: 'Pending Tasks',
+      value: '5',
+      icon: <AssignmentIcon fontSize="small" />,
+      change: '1 urgent',
+      iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800'
+    },
+    {
+      title: 'Messages',
+      value: '7',
+      icon: <MessageIcon fontSize="small" />,
+      change: '2 unread',
+      iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800'
+    }
+  ];
 
+  return (
+    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10 mt-6 sm:mt-10">
+      {stats.map((stat, index) => (
+        <StatsCard
+          key={index}
+          title={stat.title}
+          value={stat.value}
+          icon={stat.icon}
+          change={stat.change}
+          iconBg={stat.iconBg}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
@@ -87,97 +135,71 @@ export default function DoctorDashboard() {
 
   return (
     <div className="min-h-screen w-full bg-blue-500">
-      <div className="container mx-auto px-4 py-8">
+      <Container
+        maxWidth={false}
+        sx={{
+          p: 3,
+          m: 0,
+          width: 'calc(100% - 80px)',
+          maxWidth: '100% !important',
+          ml: '0px',
+          mr: '16px',
+        }}
+      >
         <SearchBar />
-        <div className="mb-8 mt-6 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
-              <span className="inline-block rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-700 p-1 shadow-lg transition-transform duration-300 hover:scale-110 hover:shadow-blue-300/80 animate-blink group relative">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-                </svg>
-                <style jsx>{`
-                  @keyframes blink {
-                    0%, 100% { opacity: 1; }
-                    45% { opacity: 1; }
-                    50% { opacity: 0.2; }
-                    55% { opacity: 1; }
-                  }
-                  .animate-blink { animation: blink 2s infinite; }
-                `}</style>
-              </span>
-              Welcome back, Dr {user?.name}!
-            </h1>
-            <p className="text-white">Here’s your dashboard overview for today.</p>
-          </div>
-          {/* No action buttons here, moved to Quick Actions below */}
+        <div className="mb-8 mt-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+            <span className="inline-block rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-blue-700 p-1 shadow-lg transition-transform duration-300 hover:scale-110 hover:shadow-blue-300/80 animate-blink group relative">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+              </svg>
+              <style jsx>{`
+                @keyframes blink {
+                  0%, 100% { opacity: 1; }
+                  45% { opacity: 1; }
+                  50% { opacity: 0.2; }
+                  55% { opacity: 1; }
+                }
+                .animate-blink { animation: blink 2s infinite; }
+              `}</style>
+            </span>
+            Welcome back, Dr {user?.name}!
+          </h1>
+          <p className="text-white">Here&apos;s your dashboard overview for today.</p>
         </div>
-        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10 mt-6 sm:mt-10">
-          {[
-            {
-              title: 'Appointments Today',
-              value: 12,
-              icon: <EventNoteIcon fontSize="small" />,
-            change: '2 scheduled',
-            iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
-          },
-          {
-            title: 'Total Patients',
-            value: 84,
-            icon: <GroupIcon fontSize="small" />,
-            change: '3 new',
-            iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
-          },
-          {
-            title: 'Pending Tasks',
-            value: 5,
-            icon: <AssignmentIcon fontSize="small" />,
-            change: '1 urgent',
-            iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
-          },
-          {
-            title: 'Messages',
-            value: 7,
-            icon: <MessageIcon fontSize="small" />,
-            change: '2 unread',
-            iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
-          },
-        ].map((stat, idx) => (
-          <StatsCard
-            key={idx}
-            title={stat.title}
-            value={stat.value}
-            icon={stat.icon}
-            change={stat.change}
-            iconBg={stat.iconBg}
-          />
-        ))}
-        </div>
-        {/* Appointments and Quick Actions side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          {/* Appointments section (2/3 width on desktop) */}
-          <div className="md:col-span-2 flex flex-col gap-6">
-            <UpcomingAppointments />
-            <RecentAppointments />
-          </div>
-          {/* Quick Actions (1/3 width on desktop) */}
-          <div>
-            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4 items-start">
-              <h2 className="text-lg font-bold text-blue-700 mb-2">Quick Actions</h2>
-              <div className="flex flex-col gap-4 w-full">
-                <div className="flex flex-col md:flex-row gap-4 w-full">
-                  <NewAppointmentButton />
-                  <ViewTaskButton />
-                </div>
-                <MessagesButton />
-              </div>
+        
+        <DashboardCards />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 mb-12">
+          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg w-full h-full flex flex-col">
+            <h3 className="text-lg font-semibold text-white mb-6">Staff Distribution</h3>
+            <div className="flex-1">
+              <RolePieChart />
             </div>
-            <div className="mt-20 flex justify-center w-full">
-              <SmallBarChart />
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg w-full h-full flex flex-col">
+            <h3 className="text-lg font-semibold text-white mb-6">Resource Allocation</h3>
+            <div className="flex-1">
+              <ResourceAllocationChart />
+            </div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg w-full h-full flex flex-col">
+            <h3 className="text-lg font-semibold text-white mb-6">Revenue Overview</h3>
+            <div className="flex-1">
+              <RevenueBarChart />
             </div>
           </div>
         </div>
-      </div>
+
+        <div className="flex flex-col md:flex-row gap-20 mb-8 items-stretch">
+          <div className="flex-[2] min-w-[320px] ml-[60px]">
+            <RecentQueries />
+          </div>
+          <div className="flex-1 min-w-[300px] max-w-xs">
+            <QuickActions />
+          </div>
+        </div>
+      </Container>
     </div>
   );
 }
